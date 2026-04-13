@@ -95,3 +95,181 @@ async function fetchNews(query) {
   const res = await fetch(`${SERVER}/api/news?query=${encodeURIComponent(query)}`);
   const data = await res.json();
   return data.items || [];
+}
+
+const GENRE_MAP = {
+  '소설/에세이': ['소설 베스트셀러', '에세이 베스트셀러'],
+  '인문/교양': ['인문 베스트셀러', '교양 베스트셀러'],
+  '자기계발': ['자기계발 베스트셀러'],
+  '경제경영': ['경제경영 베스트셀러']
+};
+
+const GENRE_TITLE_PATTERN = {
+  '소설/에세이': '감성적·시적 제목, 인물/장소 중심, 은유적 표현 선호. 예: "채식주의자", "82년생 김지영", "아몬드"',
+  '인문/교양': '질문형 또는 명사형 제목, 지적 호기심 자극. 예: "총균쇠", "왜 세계의 절반은 굶주리는가"',
+  '자기계발': '직관적·숫자형·행동 유발형. 예: "미라클 모닝", "1만 시간의 법칙", "아주 작은 습관의 힘"',
+  '경제경영': '트렌드 키워드 + 실용적 제목. 예: "부의 추월차선", "주식 투자 무작정 따라하기"'
+};
+
+const TABS = {
+  trend: {
+    fields: [
+      { id: 'keyword', label: '검색 키워드', type: 'input', placeholder: '예: 자기계발, 감정, 관계' },
+      { id: 'genre', label: '분야', type: 'select', options: ['전체', '소설/에세이', '인문/교양', '자기계발', '경제경영'] },
+    ],
+    run: async (v) => {
+      const right = document.getElementById('rightPanel');
+      right.innerHTML = '<div class="status-bar">📡 네이버 책 검색 중…</div>';
+
+      const books = await fetchBooks(v.keyword, 30, 'date');
+
+      if (books.length) {
+        right.innerHTML = `<div class="section-title">🔍 최신 도서 (${books.length}건)</div>`;
+        let grid = '<div class="book-grid">';
+        books.slice(0,12).forEach(b => {
+          const title = b.title.replace(/<[^>]+>/g,'');
+          const author = b.author.replace(/<[^>]+>/g,'');
+          grid += `<div class="book-card"><img src="${b.image||''}" alt="${title}" onerror="this.style.display='none'">
+            <div class="info"><div class="title">${title}</div><div class="author">${author}</div><div class="publisher">${b.publisher}</div></div></div>`;
+        });
+        right.innerHTML += grid + '</div>';
+      }
+
+      right.innerHTML += '<div class="status-bar">📰 예스24 베스트셀러 뉴스 수집 중…</div>';
+      const newsQuery = v.genre !== '전체' ? `예스24 베스트셀러 ${v.genre}` : `예스24 베스트셀러 ${v.keyword}`;
+      const news = await fetchNews(newsQuery);
+      const newsText = news.map(n => n.title + ' ' + n.description).join('\n');
+
+      right.querySelector('.status-bar:last-of-type').textContent = '🤖 AI 트렌드 분석 중…';
+
+      const bookList = books.slice(0,20).map(b=>`${b.title.replace(/<[^>]+>/g,'')} / ${b.author.replace(/<[^>]+>/g,'')} / ${b.publisher}`).join('\n');
+      const prompt = `출판 기획편집자를 위한 도서시장 트렌드 분석을 해주세요.
+
+키워드: ${v.keyword}
+분야: ${v.genre}
+
+[네이버 최신 도서 30권]
+${bookList}
+
+[예스24 베스트셀러 뉴스]
+${newsText}
+
+다음 형식으로 분석해주세요:
+
+【이번 트렌드 핵심 요약】
+3줄 이내
+
+【주목할 도서 & 기획 포인트】
+3권 선정, 각 도서별 기획 포인트
+
+【공통 키워드 & 독자 니즈】
+키워드 5개 + 각 설명
+
+【기획 인사이트】
+다음 기획에 반영할 시사점 3가지
+
+【추천 기획 방향】
+이 트렌드를 활용한 신간 기획 아이디어 2개`;
+
+      const aiResult = await callAI(prompt);
+      const statusBars = right.querySelectorAll('.status-bar');
+      statusBars.forEach(el => el.remove());
+      right.innerHTML += `<div class="section-title">🤖 AI 트렌드 분석</div><div class="result-box">${aiResult}</div>`;
+    }
+  },
+
+  compete: {
+    fields: [
+      { id: 'mytitle', label: '내 책 제목 (기획 중)', type: 'input', placeholder: '예: 바다에서 온 소년' },
+      { id: 'keyword', label: '경쟁도서 검색 키워드', type: 'input', placeholder: '예: 바다 소년 성장 소설' },
+      { id: 'point', label: '내 책의 차별화 포인트', type: 'textarea', placeholder: '어떤 점이 다른지 간단히 적어주세요' },
+    ],
+    run: async (v) => {
+      const right = document.getElementById('rightPanel');
+      right.innerHTML = '<div class="status-bar">📡 유사 도서 검색 중…</div>';
+
+      const books = await fetchBooks(v.keyword, 30, 'sim');
+
+      right.innerHTML = `<div class="section-title">🔍 유사 도서 비교표 (${books.length}건)</div>`;
+      let tableHtml = `<table class="comp-table"><thead><tr>
+        <th>표지</th><th>제목</th><th>저자</th><th>출판사</th><th>출간일</th><th>가격</th>
+      </tr></thead><tbody>`;
+      books.slice(0,20).forEach(b => {
+        const title = b.title.replace(/<[^>]+>/g,'');
+        const author = b.author.replace(/<[^>]+>/g,'');
+        const date = b.pubdate ? b.pubdate.slice(0,4)+'.'+b.pubdate.slice(4,6) : '-';
+        const price = b.discount ? parseInt(b.discount).toLocaleString()+'원' : '-';
+        tableHtml += `<tr>
+          <td><img src="${b.image||''}" style="width:45px;height:60px;object-fit:cover;border-radius:3px;" onerror="this.style.display='none'"></td>
+          <td><strong>${title}</strong></td>
+          <td>${author}</td>
+          <td><span class="badge">${b.publisher}</span></td>
+          <td>${date}</td>
+          <td>${price}</td>
+        </tr>`;
+      });
+      tableHtml += '</tbody></table>';
+      right.innerHTML += tableHtml;
+      right.innerHTML += '<div class="status-bar">🤖 AI 경쟁 분석 중…</div>';
+
+      const bookList = books.slice(0,15).map(b=>`제목: ${b.title.replace(/<[^>]+>/g,'')} / 저자: ${b.author.replace(/<[^>]+>/g,'')} / 출판사: ${b.publisher} / 출간: ${b.pubdate||'-'} / 가격: ${b.discount||'-'}원`).join('\n');
+      const prompt = `출판 기획편집자를 위한 경쟁도서 분석을 해주세요.
+
+내 책: ${v.mytitle}
+차별화 포인트: ${v.point}
+
+경쟁 도서 목록 (${books.length}권):
+${bookList}
+
+【경쟁 강도 평가】상/중/하 + 이유
+【경쟁도서 핵심 특징】상위 5권 각각 타깃독자·강점·약점
+【시장 내 포지셔닝 제안】내 책이 파고들 수 있는 틈새
+【차별화 전략】경쟁도서 대비 강조 포인트 3가지
+【마케팅 방향 제안】이 경쟁 구도에서 효과적인 마케팅 전략`;
+
+      const aiResult = await callAI(prompt);
+      right.querySelector('.status-bar').remove();
+      right.innerHTML += `<div class="section-title">🤖 AI 경쟁 분석</div><div class="result-box">${aiResult}</div>`;
+    }
+  },
+
+  copy: {
+    fields: [
+      { id: 'author', label: '저자', type: 'input', placeholder: '예: 개럿 카' },
+      { id: 'genre', label: '분야', type: 'select', options: ['소설/에세이', '인문/교양', '자기계발', '경제경영'] },
+      { id: 'target', label: '주요 독자', type: 'input', placeholder: '예: 30대 직장인 여성' },
+      { id: 'tone', label: '톤 & 무드', type: 'select', options: ['감성/서정적', '강렬/임팩트', '따뜻/위로', '지적/세련', '유머/가벼움'] },
+      { id: 'desc', label: '책 소개 (핵심 메시지)', type: 'textarea', placeholder: '줄거리나 핵심 메시지를 입력해주세요' },
+      { id: 'keyword', label: '핵심 키워드', type: 'input', placeholder: '예: 바다, 소년, 성장, 경계' },
+      { id: 'file', label: '원고 파일 업로드 (PDF/DOCX/TXT)', type: 'file' },
+    ],
+    run: async (v, file) => {
+      const right = document.getElementById('rightPanel');
+      right.innerHTML = '<div class="status-bar">📡 베스트셀러 트렌드 수집 중…</div>';
+
+      const [books, news] = await Promise.all([
+        fetchBooks(v.keyword || v.genre, 30, 'sim'),
+        fetchNews(`예스24 베스트셀러 ${v.genre}`)
+      ]);
+
+      right.querySelector('.status-bar').textContent = '🤖 제목안 & 카피 생성 중… (30초~1분 소요)';
+
+      const bookTitles = books.slice(0,20).map(b => b.title.replace(/<[^>]+>/g,'')).join(', ');
+      const newsText = news.map(n => n.title + ' ' + n.description).join('\n');
+      const titlePattern = GENRE_TITLE_PATTERN[v.genre] || '';
+
+      const prompt = `당신은 대한민국 최고의 출판 기획편집자이자 카피라이터입니다.
+아래 정보를 바탕으로 베스트셀러가 될 제목안 10개와 마케팅 카피를 작성해주세요.
+
+[도서 정보]
+저자: ${v.author}
+분야: ${v.genre}
+주요 독자: ${v.target}
+톤 & 무드: ${v.tone}
+핵심 키워드: ${v.keyword}
+책 소개: ${v.desc}
+
+[${v.genre} 분야 제목 패턴]
+${titlePattern}
+
+[현재 베스트셀러 제목 트렌드
