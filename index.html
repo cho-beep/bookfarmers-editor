@@ -86,6 +86,19 @@
   .comp-table td { padding: 10px 12px; border-bottom: 1px solid var(--border2); vertical-align: top; line-height: 1.5; }
   .comp-table tr:hover td { background: var(--surface2); }
   .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 11px; background: var(--accent-light); color: var(--accent); }
+  .refine-wrap { margin-top: 20px; background: var(--accent-lighter); border: 1px solid var(--accent-light); border-radius: var(--radius-lg); padding: 18px 20px; }
+  .refine-label { font-size: 11px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .refine-row { display: flex; gap: 10px; align-items: flex-start; }
+  .refine-row textarea { min-height: 60px; flex: 1; border-color: var(--accent-light); background: #fff; }
+  .refine-row textarea:focus { border-color: var(--accent2); }
+  .refine-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 12px; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+  .refine-btn:hover { background: var(--accent2); }
+  .refine-btn:disabled { background: #999; cursor: not-allowed; }
+  .refine-history { margin-top: 14px; }
+  .refine-item { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; font-size: 13px; }
+  .refine-item-label { font-size: 10px; font-weight: 600; color: var(--ink3); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px; }
+  .refine-item-req { color: var(--accent); font-weight: 500; margin-bottom: 8px; font-size: 12px; }
+  .refine-item-content { white-space: pre-wrap; line-height: 1.8; color: var(--ink2); }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 </style>
@@ -278,6 +291,16 @@
             <div class="otab" onclick="switchOtab(3,3)">SNS</div>
           </div>
           <div class="output-box" id="oc-3"><button class="copy-btn" onclick="copyOut('oc-3',this)">복사</button><span id="oc-3-text"></span></div>
+
+          <!-- 추가 요청 영역 -->
+          <div class="refine-wrap" id="refine-wrap-3">
+            <div class="refine-label">✏️ 추가 요청 — 결과를 다듬거나 방향을 바꿔보세요</div>
+            <div class="refine-row">
+              <textarea id="refine-input-3" placeholder="예: 제목안을 좀 더 감성적으로 바꿔줘 / 띠지 문구만 더 짧고 강렬하게 / 자기계발 느낌 강하게 다시 / 3번 제목 방향으로 카피도 맞춰줘"></textarea>
+              <button class="refine-btn" onclick="runRefine()">재생성 <span>→</span></button>
+            </div>
+            <div class="refine-history" id="refine-history-3"></div>
+          </div>
         </div>
       </div>
 
@@ -373,22 +396,25 @@ const GENRE_TITLE_PATTERN = {
 
 function getCopyToneGuide(genre) {
   if(genre.includes('소설')||genre.includes('에세이')) return {
-    tone: '소설/에세이: 독자의 감성을 직접 건드리는 공감형. 인물의 감정이나 상황을 독자 자신의 언어로 표현한다. 독자가 "이거 내 이야기다" 싶은 메시지.',
-    examples: '"기억은 사라져도, 마음은 더욱 쌓여간다" / "너도 알다시피 난 네가 자랑스럽단다" / "우리는 모두 조금씩 부서진 채로 살아간다"'
+    tone: '소설/에세이: 독자의 감성을 직접 건드리는 공감형. 인물의 감정이나 상황을 독자 자신의 언어로 표현한다.',
+    examples: '"기억은 사라져도, 마음은 더욱 쌓여간다" / "너도 알다시피 난 네가 자랑스럽단다"'
   };
   if(genre.includes('인문')||genre.includes('교양')) return {
     tone: '인문/교양: 지적 충격과 새로운 관점을 주는 질문형 또는 선언형. 독자로 하여금 자신의 삶을 다시 보게 만드는 메시지.',
-    examples: '"나는 가치 있는 삶을 살고 있는가" / "당신이 알고 있는 역사는 절반도 되지 않는다" / "우리가 당연하다고 믿어온 것들이 흔들리기 시작한다"'
+    examples: '"나는 가치 있는 삶을 살고 있는가" / "우리가 당연하다고 믿어온 것들이 흔들리기 시작한다"'
   };
   if(genre.includes('자기계발')) return {
-    tone: '자기계발: 강력한 선언형 또는 행동 촉구형. 독자에게 직접 말 거는 임팩트 있는 워딩. 결핍·전환·성공 키워드.',
-    examples: '"사람들은 결국 당신을 삽니다" / "당신이 부족하다고 느낀 그것이 가장 강력한 무기다" / "AI가 강해질수록 당신이 더 강해져야 한다"'
+    tone: '자기계발: 강력한 선언형 또는 행동 촉구형. 독자에게 직접 말 거는 임팩트 있는 워딩.',
+    examples: '"사람들은 결국 당신을 삽니다" / "당신이 부족하다고 느낀 그것이 가장 강력한 무기다"'
   };
   return {
     tone: '경제/경영: 핵심 통찰을 압축한 강렬한 선언형. 숫자나 대비 구조로 임팩트를 극대화.',
-    examples: '"상위 1%는 다른 것을 하는 게 아니라 다르게 한다" / "당신의 결핍이 가장 강력한 무기다"'
+    examples: '"상위 1%는 다른 것을 하는 게 아니라 다르게 한다"'
   };
 }
+
+// 카피 탭용 마지막 프롬프트 저장
+let lastCopyPrompt = '';
 
 function switchPanel(i){
   document.querySelectorAll('.nav-item').forEach((n,j)=>n.classList.toggle('on',j===i));
@@ -461,6 +487,48 @@ function parseOutput(pi,full){
   document.querySelectorAll('#out-'+pi+' .otab').forEach((t,j)=>t.classList.toggle('on',j===0));
 }
 
+async function runRefine(){
+  const input = document.getElementById('refine-input-3');
+  const request = input.value.trim();
+  if(!request){ alert('추가 요청 내용을 입력해주세요.'); return; }
+  if(!lastCopyPrompt){ alert('먼저 제목·카피를 생성해주세요.'); return; }
+
+  const btn = document.querySelector('#refine-wrap-3 .refine-btn');
+  btn.disabled = true; btn.textContent = '생성 중…';
+
+  const currentResult = Object.values(outputData[3]).filter(v=>v&&typeof v==='string').join('\n\n---\n\n');
+
+  const refinePrompt = `아래는 기존에 생성된 제목안·카피 결과물이다:
+
+${currentResult}
+
+---
+편집자의 추가 요청:
+"${request}"
+
+위 요청을 반영해서 결과물을 수정·보완해라. 기존 결과물의 좋은 부분은 유지하되, 요청 사항을 충실히 반영한다.
+출력 형식은 기존과 동일하게 [제목안 10개] [띠지·뒷표지용] [POP·배너] [SNS] 섹션으로 구분해서 작성한다.`;
+
+  const history = document.getElementById('refine-history-3');
+  const item = document.createElement('div');
+  item.className = 'refine-item';
+  item.innerHTML = `<div class="refine-item-label">추가 요청 결과</div><div class="refine-item-req">📝 "${request}"</div><div class="refine-item-content"><div class="loading">생성 중<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div></div>`;
+  history.insertBefore(item, history.firstChild);
+
+  try {
+    const result = await callAPI(refinePrompt);
+    item.querySelector('.refine-item-content').textContent = result;
+
+    // 탭 결과도 업데이트
+    parseOutput(3, result);
+  } catch(e) {
+    item.querySelector('.refine-item-content').textContent = '오류: '+e.message;
+  }
+
+  btn.disabled = false; btn.textContent = '재생성 →';
+  input.value = '';
+}
+
 async function runAgent(pi){
   setLoading(pi);
   try {
@@ -495,6 +563,7 @@ async function runAgent(pi){
       const bookTitles=books.slice(0,20).map(b=>b.title.replace(/<[^>]+>/g,'')).join(', ');
       const newsText=news.map(n=>n.title+' '+n.description).join('\n');
       const titlePattern=GENRE_TITLE_PATTERN[genre]||'';
+
       const prompt=`당신은 『82년생 김지영』『아주 작은 습관의 힘』『미라클 모닝』『트렌드 코리아』같은 밀리언셀러 제목을 만든 대한민국 최고의 출판 편집자입니다.
 
 베스트셀러 제목의 5가지 법칙:
@@ -534,6 +603,11 @@ ${newsText}
 
 [SNS]
 인스타그램/페이스북용 홍보 문구 5개 (해시태그 포함, 150자 내외). 각 후보 뒤에 선택 이유 한 줄.`;
+
+      lastCopyPrompt = prompt;
+      // 추가 요청 히스토리 초기화
+      document.getElementById('refine-history-3').innerHTML = '';
+
       parseOutput(pi, await callAPI(prompt, hasFile?'copy-file':null));
     }
     else if(pi===4){
@@ -560,18 +634,15 @@ ISBN: ${v('pr-isbn')} / 키워드: ${v('pr-keyword')}
 추천의 글: ${v('pr-blurb')||'없음'}
 
 [카피 2행 구조 — 책 소개·출판사 리뷰 각 섹션 서두에 반드시 적용]
-카피는 두 레이어로 구성한다:
-▶ 1행 ("따옴표" 처리): 독자가 읽는 순간 감정이 움직이거나 강한 인상을 받는 메시지. 본문 인용이 아니라 이 책의 핵심을 독자의 언어로 새롭게 카피라이팅한 것.
+▶ 1행 ("따옴표" 처리): 독자가 읽는 순간 감정이 움직이거나 강한 인상을 받는 메시지.
 분야별 톤: ${copyToneGuide}
 참고 예시: ${copyExamples}
 ▶ 2행: 책의 핵심을 명료하게 압축한 1~2행 설명형 카피.
-참고 예시: "작고 약한 존재들이 마침내 서로에게 희망이 되기까지" / "삶의 끝에서 만난 현명하고 가치 있는 삶을 위한 여섯 가지 지혜"
 
-[본문 발췌 페이지 표기 규칙]
-원고 파일이 있을 경우: 발췌문 끝에 반드시 _P. 페이지번호 형식으로 출처를 표기한다.
-예: "인용문장" _P. 45 / "인용문장" _P. 119-120
+[본문 발췌 페이지 표기]
+원고 파일이 있을 경우 발췌문 끝에 반드시 _P. 페이지번호 형식으로 표기한다.
 
-[북파머스 보도자료 포맷 — 아래 구조를 정확히 따른다]
+[북파머스 보도자료 포맷]
 
 ─────────────────────────────
 북파머스 신간 안내
@@ -592,14 +663,14 @@ ISBN: ${v('pr-isbn')} / 키워드: ${v('pr-keyword')}
 ${awards}
 
 [메인 카피 2행]
-"1행: 독자에게 직접 가닿는 메시지" ← 반드시 따옴표
+"1행: 독자에게 직접 가닿는 메시지"
 2행: 책 핵심 요약
 
 ─────────────────────────────
 ■ 책 소개
 ─────────────────────────────
 [책 소개 카피 2행 — 메인 카피와 다른 새로운 카피]
-"1행: 독자에게 직접 가닿는 메시지" ← 반드시 따옴표
+"1행: 독자에게 직접 가닿는 메시지"
 2행: 책 핵심 요약
 
 ${awards}
@@ -609,7 +680,7 @@ ${awards}
 ■ 출판사 리뷰
 ─────────────────────────────
 [출판사 리뷰 카피 2행 — 앞의 카피들과 다른 새로운 카피]
-"1행: 독자에게 직접 가닿는 메시지" ← 반드시 따옴표
+"1행: 독자에게 직접 가닿는 메시지"
 2행: 이 섹션 핵심 주제 압축
 
 800자 내외 본문. 편집자 시각. 평서체.
@@ -685,7 +756,6 @@ function downloadHTML(){
     const title=(document.getElementById('pr-title')||{}).value||'보도자료';
     const pub=(document.getElementById('pr-pub')||{}).value||'';
     const text=outputData[4].press||'';
-
     const lines=text.split('\n').map(line=>{
       const t=line.trim();
       if(!t) return '<br>';
@@ -697,29 +767,11 @@ function downloadHTML(){
       if(t.includes('담당:')||t.startsWith('www.')) return `<p style="text-align:center;font-size:11px;color:#888;margin-top:16px;">${t}</p>`;
       return `<p style="font-size:13px;color:#333;line-height:1.8;margin:6px 0;">${t}</p>`;
     }).join('\n');
-
-    const html=`<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>보도자료_${title}</title>
-<style>
-  body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; max-width: 700px; margin: 40px auto; padding: 40px; color: #1a1a1a; }
-  @media print { body { margin: 0; padding: 20px; } }
-</style>
-</head>
-<body>
-<p style="text-align:right;font-size:11px;color:#888;margin-bottom:24px;">${pub}</p>
-${lines}
-</body>
-</html>`;
-
+    const html=`<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>보도자료_${title}</title><style>body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;max-width:700px;margin:40px auto;padding:40px;color:#1a1a1a;}@media print{body{margin:0;padding:20px;}}</style></head><body><p style="text-align:right;font-size:11px;color:#888;margin-bottom:24px;">${pub}</p>${lines}</body></html>`;
     const blob=new Blob([html],{type:'text/html;charset=utf-8'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`보도자료_${title}.html`; a.click();
     btn.textContent='완료!';
     setTimeout(()=>{btn.disabled=false;btn.textContent='PDF용 HTML 저장';},2000);
-
-    // 안내 메시지
     setTimeout(()=>alert('HTML 파일을 브라우저로 열고 Ctrl+P → "PDF로 저장"을 선택하면 한글 깨짐 없는 PDF가 생성됩니다.'),500);
   } catch(e){btn.disabled=false;btn.textContent='PDF용 HTML 저장';alert('생성 실패: '+e.message);}
 }
