@@ -9,8 +9,8 @@
 body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f5f4f0; color: #1a1a1a; }
 header { background: #1a1a1a; color: #fff; padding: 16px 24px; }
 header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
-.tabs { display: flex; background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 24px; }
-.tab { padding: 14px 20px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; }
+.tabs { display: flex; background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 24px; overflow-x: auto; }
+.tab { padding: 14px 18px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; white-space: nowrap; }
 .tab.active { border-bottom-color: #1a1a1a; color: #1a1a1a; font-weight: 600; }
 .container { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 100px); }
 .left { background: #fff; border-right: 1px solid #e0e0e0; padding: 24px; overflow-y: auto; }
@@ -34,10 +34,10 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-10px)} }
 .result-box { background: #fff; border-radius: 8px; padding: 24px; white-space: pre-wrap; font-size: 14px; line-height: 1.8; }
 .section-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; margin-top: 24px; }
-.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
 .book-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-.book-card img { width: 100%; height: 200px; object-fit: cover; }
-.book-card .info { padding: 12px; }
+.book-card img { width: 100%; height: 190px; object-fit: cover; }
+.book-card .info { padding: 10px; }
 .book-card .title { font-size: 12px; font-weight: 600; margin-bottom: 4px; line-height: 1.4; }
 .book-card .author { font-size: 11px; color: #888; }
 .book-card .publisher { font-size: 11px; color: #aaa; }
@@ -47,6 +47,7 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 .comp-table tr:last-child td { border-bottom: none; }
 .comp-table tr:hover td { background: #f9f9f9; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0f0f0; color: #555; }
+.status-bar { background: #f0f0f0; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #666; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -54,7 +55,7 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 <div class="tabs">
   <div class="tab active" onclick="switchTab('trend')">트렌드 분석</div>
   <div class="tab" onclick="switchTab('compete')">경쟁도서 분석</div>
-  <div class="tab" onclick="switchTab('copy')">카피 생성</div>
+  <div class="tab" onclick="switchTab('copy')">제목·카피 작성</div>
   <div class="tab" onclick="switchTab('manuscript')">원고 검토</div>
 </div>
 <div class="container">
@@ -75,213 +76,22 @@ async function callAI(prompt) {
   return data.result || data.error || '결과를 가져올 수 없습니다.';
 }
 
-function parseCompTable(aiText) {
-  const rows = [];
-  const lines = aiText.split('\n').filter(l => l.includes('|'));
-  lines.forEach(line => {
-    const cells = line.split('|').map(c => c.trim()).filter(c => c && c !== '---' && !c.match(/^-+$/));
-    if (cells.length >= 4) rows.push(cells);
-  });
-  return rows;
+async function callAIWithFile(prompt, file) {
+  const fd = new FormData();
+  fd.append('prompt', prompt);
+  if (file) fd.append('file', file);
+  const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
+  const data = await res.json();
+  return data.result || data.error || '결과를 가져올 수 없습니다.';
 }
 
-function renderCompTable(books, aiText) {
-  const right = document.getElementById('rightPanel');
-  right.innerHTML = '';
-
-  // 네이버 검색 결과 표
-  right.innerHTML += `<div class="section-title">🔍 유사 도서 비교표 (네이버 책 검색)</div>`;
-  let tableHtml = `<table class="comp-table">
-    <thead><tr>
-      <th>표지</th><th>제목</th><th>저자</th><th>출판사</th><th>출간일</th><th>가격</th>
-    </tr></thead><tbody>`;
-  books.slice(0, 15).forEach(b => {
-    const title = b.title.replace(/<[^>]+>/g, '');
-    const author = b.author.replace(/<[^>]+>/g, '');
-    const date = b.pubdate ? b.pubdate.slice(0,4) + '.' + b.pubdate.slice(4,6) : '-';
-    const price = b.discount ? parseInt(b.discount).toLocaleString() + '원' : '-';
-    tableHtml += `<tr>
-      <td><img src="${b.image||''}" style="width:50px;height:65px;object-fit:cover;border-radius:4px;" onerror="this.style.display='none'"></td>
-      <td><strong>${title}</strong></td>
-      <td>${author}</td>
-      <td><span class="badge">${b.publisher}</span></td>
-      <td>${date}</td>
-      <td>${price}</td>
-    </tr>`;
-  });
-  tableHtml += '</tbody></table>';
-  right.innerHTML += tableHtml;
-
-  // AI 분석 결과
-  right.innerHTML += `<div class="section-title">🤖 AI 경쟁 분석</div><div class="result-box">${aiText}</div>`;
+async function fetchBooks(query, display = 30, sort = 'date') {
+  const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(query)}&display=${display}&sort=${sort}`);
+  const data = await res.json();
+  return data.items || [];
 }
 
-const TABS = {
-  trend: {
-    fields: [
-      { id: 'keyword', label: '검색 키워드', type: 'input', placeholder: '예: 자기계발, 감정, 관계' },
-      { id: 'genre', label: '분야', type: 'select', options: ['전체', '소설/에세이', '인문/교양', '자기계발', '경제경영'] },
-    ],
-    run: async (v) => {
-      const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(v.keyword)}&display=20&sort=date`);
-      const data = await res.json();
-      const books = data.items || [];
-      const right = document.getElementById('rightPanel');
-      right.innerHTML = '';
-      if (books.length) {
-        right.innerHTML += `<div class="section-title">🔍 네이버 책 검색 결과 (${books.length}건)</div>`;
-        let grid = '<div class="book-grid">';
-        books.slice(0,12).forEach(b => {
-          const title = b.title.replace(/<[^>]+>/g,'');
-          const author = b.author.replace(/<[^>]+>/g,'');
-          grid += `<div class="book-card"><img src="${b.image||''}" alt="${title}" onerror="this.style.display='none'">
-            <div class="info"><div class="title">${title}</div><div class="author">${author}</div><div class="publisher">${b.publisher}</div></div></div>`;
-        });
-        grid += '</div>';
-        right.innerHTML += grid;
-      }
-      const bookList = books.slice(0,10).map(b=>`${b.title.replace(/<[^>]+>/g,'')} / ${b.author.replace(/<[^>]+>/g,'')} / ${b.publisher}`).join('\n');
-      const prompt = `출판 기획편집자를 위한 도서시장 트렌드 분석을 해주세요.\n\n키워드: ${v.keyword}\n분야: ${v.genre}\n\n최근 출간 도서:\n${bookList}\n\n【핵심 트렌드 요약】3줄\n【주목 도서 & 기획 포인트】3권\n【공통 키워드 & 독자 니즈】키워드 5개\n【기획 인사이트】3가지\n【추천 기획 방향】아이디어 2개`;
-      const aiResult = await callAI(prompt);
-      right.innerHTML += `<div class="section-title">🤖 AI 트렌드 분석</div><div class="result-box">${aiResult}</div>`;
-    }
-  },
-  compete: {
-    fields: [
-      { id: 'mytitle', label: '내 책 제목 (기획 중)', type: 'input', placeholder: '예: 바다에서 온 소년' },
-      { id: 'keyword', label: '경쟁도서 검색 키워드', type: 'input', placeholder: '예: 바다 소년 성장 소설' },
-      { id: 'point', label: '내 책의 차별화 포인트', type: 'textarea', placeholder: '어떤 점이 다른지 간단히 적어주세요' },
-    ],
-    run: async (v) => {
-      const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(v.keyword)}&display=20&sort=sim`);
-      const data = await res.json();
-      const books = data.items || [];
-      const bookList = books.slice(0,12).map(b=>`제목: ${b.title.replace(/<[^>]+>/g,'')} / 저자: ${b.author.replace(/<[^>]+>/g,'')} / 출판사: ${b.publisher} / 출간: ${b.pubdate||'-'} / 가격: ${b.discount||'-'}원`).join('\n');
-      const prompt = `출판 기획편집자를 위한 경쟁도서 분석을 해주세요.
-
-내 책: ${v.mytitle}
-차별화 포인트: ${v.point}
-
-경쟁 도서 목록:
-${bookList}
-
-다음 형식으로 분석해주세요:
-
-【경쟁 강도 평가】
-상/중/하 + 이유
-
-【경쟁도서 핵심 특징】
-각 도서별 타깃독자, 강점, 약점 (상위 5권)
-
-【시장 내 포지셔닝 제안】
-내 책이 파고들 수 있는 틈새
-
-【차별화 전략】
-경쟁도서 대비 내 책의 강조 포인트 3가지
-
-【마케팅 방향 제안】
-이 경쟁 구도에서 효과적인 마케팅 전략`;
-      const aiResult = await callAI(prompt);
-      renderCompTable(books, aiResult);
-    }
-  },
-  copy: {
-    fields: [
-      { id: 'title', label: '책 제목', type: 'input', placeholder: '예: 바다에서 온 소년' },
-      { id: 'author', label: '저자', type: 'input', placeholder: '예: 개럿 카' },
-      { id: 'desc', label: '책 소개', type: 'textarea', placeholder: '줄거리나 핵심 메시지를 입력해주세요' },
-      { id: 'genre', label: '분야', type: 'select', options: ['소설/에세이', '인문/교양', '자기계발', '경제경영'] },
-      { id: 'target', label: '주요 독자', type: 'input', placeholder: '예: 30대 직장인 여성' },
-    ],
-    run: async (v) => {
-      const prompt = `출판 마케팅 카피라이터로서 아래 도서의 카피를 작성해주세요.\n\n제목: ${v.title}\n저자: ${v.author}\n분야: ${v.genre}\n주요 독자: ${v.target}\n책 소개: ${v.desc}\n\n【띠지 문구】\n버전 A (감성형):\n버전 B (질문형):\n버전 C (선언형):\n\n【POP/배너 문구】\n버전 A (짧고 강렬):\n버전 B (독자 공감형):\n\n【책 소개글】\n(3~4줄, 서점 노출용)\n\n【SNS 카피】\n(인스타그램용, 해시태그 포함)`;
-      const right = document.getElementById('rightPanel');
-      const aiResult = await callAI(prompt);
-      right.innerHTML = `<div class="result-box">${aiResult}</div>`;
-    }
-  },
-  manuscript: {
-    fields: [
-      { id: 'title', label: '원고 제목', type: 'input', placeholder: '임시 제목 또는 작업명' },
-      { id: 'genre', label: '분야', type: 'select', options: ['소설/에세이', '인문/교양', '자기계발', '경제경영'] },
-      { id: 'content', label: '원고 내용 붙여넣기', type: 'textarea', placeholder: '원고 일부를 붙여넣어 주세요' },
-      { id: 'file', label: '파일 업로드 (PDF/DOCX/TXT)', type: 'file' },
-    ],
-    run: async (v, file) => {
-      const prompt = `출판 기획편집자로서 아래 원고를 검토해주세요.\n\n제목: ${v.title}\n분야: ${v.genre}\n\n【원고 총평】강점과 개선점 각 3가지\n【독자 타깃 분석】주요 독자층과 이유\n【시장성 평가】베스트셀러 가능성 (상/중/하) + 이유\n【편집 방향 제안】구성, 제목, 포지셔닝 관련 3가지\n【유사 성공 사례】참고할 기출간 도서 2~3권`;
-      const right = document.getElementById('rightPanel');
-      let aiResult;
-      if (file) {
-        const fd = new FormData();
-        fd.append('prompt', prompt);
-        fd.append('file', file);
-        const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
-        const data = await res.json();
-        aiResult = data.result || data.error;
-      } else {
-        aiResult = await callAI(prompt + (v.content ? '\n\n원고 내용:\n' + v.content : ''));
-      }
-      right.innerHTML = `<div class="result-box">${aiResult}</div>`;
-    }
-  }
-};
-
-let currentTab = 'trend';
-
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach((el, i) => {
-    el.classList.toggle('active', Object.keys(TABS)[i] === tab);
-  });
-  renderForm(tab);
-  document.getElementById('rightPanel').innerHTML = '<div class="empty"><div class="glyph">📖</div><p>정보를 입력하고<br>분석을 시작해주세요.</p></div>';
-}
-
-function renderForm(tab) {
-  const form = TABS[tab];
-  const left = document.getElementById('leftPanel');
-  let html = '';
-  form.fields.forEach(f => {
-    if (f.type === 'input') {
-      html += `<div class="field"><label>${f.label}</label><input id="${f.id}" placeholder="${f.placeholder||''}"></div>`;
-    } else if (f.type === 'select') {
-      html += `<div class="field"><label>${f.label}</label><select id="${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
-    } else if (f.type === 'textarea') {
-      html += `<div class="field"><label>${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea></div>`;
-    } else if (f.type === 'file') {
-      html += `<div class="field"><label>${f.label}</label><input type="file" id="${f.id}" accept=".pdf,.docx,.txt"></div>`;
-    }
-  });
-  html += `<div class="divider"></div><button class="btn" onclick="runAgent()">분석 시작</button>`;
-  left.innerHTML = html;
-}
-
-async function runAgent() {
-  const form = TABS[currentTab];
-  const vals = {};
-  let file = null;
-  form.fields.forEach(f => {
-    if (f.type === 'file') {
-      const el = document.getElementById(f.id);
-      if (el && el.files[0]) file = el.files[0];
-    } else {
-      const el = document.getElementById(f.id);
-      vals[f.id] = el ? el.value.trim() : '';
-    }
-  });
-  const btn = document.querySelector('.btn');
-  const right = document.getElementById('rightPanel');
-  btn.disabled = true;
-  right.innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div><span>AI가 분석 중입니다…</span></div>';
-  try {
-    await form.run(vals, file);
-  } catch(e) {
-    right.innerHTML = `<div class="result-box">오류: ${e.message}</div>`;
-  }
-  btn.disabled = false;
-}
-
-renderForm('trend');
-</script>
-</body>
-</html>
+async function fetchNews(query) {
+  const res = await fetch(`${SERVER}/api/news?query=${encodeURIComponent(query)}`);
+  const data = await res.json();
+  return data.items || [];
