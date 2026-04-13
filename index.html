@@ -56,4 +56,215 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 <div class="container">
   <div class="left" id="leftPanel"></div>
   <div class="right" id="rightPanel">
-    <div class="empty"><div class="glyph">📖</div><p>정보를 입력하고<br>분석을 시작해주세요.
+    <div class="empty"><div class="glyph">📖</div><p>정보를 입력하고<br>분석을 시작해주세요.</p></div>
+  </div>
+</div>
+
+<script>
+const SERVER = 'https://bookfarmers-server-production.up.railway.app';
+
+const TABS = {
+  trend: {
+    fields: [
+      { id: 'keyword', label: '검색 키워드', type: 'input', placeholder: '예: 자기계발, 감정, 관계' },
+      { id: 'genre', label: '분야', type: 'select', options: ['전체', '소설/에세이', '인문/교양', '자기계발', '경제경영', '과학', '역사'] },
+    ],
+    run: async (v) => {
+      const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(v.keyword)}&display=20&sort=date`);
+      const data = await res.json();
+      const books = data.items || [];
+      renderBooks(books);
+      const bookList = books.slice(0, 10).map(b => `${b.title.replace(/<[^>]+>/g,'')} / ${b.author.replace(/<[^>]+>/g,'')} / ${b.publisher}`).join('\n');
+      const prompt = `출판 기획편집자를 위한 도서시장 트렌드 분석을 해주세요.
+
+키워드: ${v.keyword}
+분야: ${v.genre}
+
+최근 출간된 관련 도서 목록:
+${bookList}
+
+다음 형식으로 분석해주세요:
+
+【이번 트렌드 핵심 요약】
+3줄 이내
+
+【주목할 도서 및 이유】
+3권 선정, 각 도서별 기획 포인트
+
+【공통 키워드 & 독자 니즈】
+키워드 5개 + 각 설명
+
+【기획 인사이트】
+다음 기획에 반영할 수 있는 시사점 3가지
+
+【추천 기획 방향】
+이 트렌드를 활용한 신간 기획 아이디어 2개`;
+      return await callAI(prompt);
+    }
+  },
+  copy: {
+    fields: [
+      { id: 'title', label: '책 제목', type: 'input', placeholder: '예: 바다에서 온 소년' },
+      { id: 'author', label: '저자', type: 'input', placeholder: '예: 개럿 카' },
+      { id: 'desc', label: '책 소개 (간단히)', type: 'textarea', placeholder: '줄거리나 핵심 메시지를 입력해주세요' },
+      { id: 'genre', label: '분야', type: 'select', options: ['소설/에세이', '인문/교양', '자기계발', '경제경영'] },
+      { id: 'target', label: '주요 독자', type: 'input', placeholder: '예: 30대 직장인 여성' },
+    ],
+    run: async (v) => {
+      const prompt = `출판 마케팅 카피라이터로서 아래 도서의 카피를 작성해주세요.
+
+제목: ${v.title}
+저자: ${v.author}
+분야: ${v.genre}
+주요 독자: ${v.target}
+책 소개: ${v.desc}
+
+다음 형식으로 작성해주세요:
+
+【띠지 문구】
+버전 A (감성형): 
+버전 B (질문형): 
+버전 C (선언형): 
+
+【POP/배너 문구】
+버전 A (짧고 강렬): 
+버전 B (독자 공감형): 
+
+【책 소개글】
+(3~4줄, 서점 노출용)
+
+【SNS 카피】
+(인스타그램용, 해시태그 포함)`;
+      return await callAI(prompt);
+    }
+  },
+  manuscript: {
+    fields: [
+      { id: 'title', label: '원고 제목', type: 'input', placeholder: '임시 제목 또는 작업명' },
+      { id: 'genre', label: '분야', type: 'select', options: ['소설/에세이', '인문/교양', '자기계발', '경제경영'] },
+      { id: 'content', label: '원고 내용 (일부 붙여넣기)', type: 'textarea', placeholder: '원고 일부를 붙여넣어 주세요' },
+      { id: 'file', label: '또는 파일 업로드 (PDF/DOCX/TXT)', type: 'file' },
+    ],
+    run: async (v, file) => {
+      const prompt = `출판 기획편집자로서 아래 원고를 검토해주세요.
+
+제목: ${v.title}
+분야: ${v.genre}
+
+【원고 총평】
+강점과 개선점 각 3가지
+
+【독자 타깃 분석】
+주요 독자층과 그 이유
+
+【시장성 평가】
+베스트셀러 가능성 (상/중/하) + 이유
+
+【편집 방향 제안】
+구성, 제목, 포지셔닝 관련 제안 3가지
+
+【유사 성공 사례】
+참고할 만한 기출간 도서 2~3권`;
+      if (file) {
+        const fd = new FormData();
+        fd.append('prompt', prompt);
+        fd.append('file', file);
+        const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
+        const data = await res.json();
+        return data.result || data.error;
+      }
+      if (v.content) {
+        return await callAI(prompt + '\n\n원고 내용:\n' + v.content);
+      }
+      return '원고 내용을 입력하거나 파일을 업로드해주세요.';
+    }
+  }
+};
+
+async function callAI(prompt) {
+  const fd = new FormData();
+  fd.append('prompt', prompt);
+  const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
+  const data = await res.json();
+  return data.result || data.error || '결과를 가져올 수 없습니다.';
+}
+
+function renderBooks(books) {
+  if (!books.length) return;
+  const right = document.getElementById('rightPanel');
+  const grid = document.createElement('div');
+  grid.innerHTML = `<div class="section-title">🔍 네이버 책 검색 결과 (${books.length}건)</div>`;
+  const bookGrid = document.createElement('div');
+  bookGrid.className = 'book-grid';
+  books.slice(0, 12).forEach(b => {
+    const title = b.title.replace(/<[^>]+>/g, '');
+    const author = b.author.replace(/<[^>]+>/g, '');
+    bookGrid.innerHTML += `
+      <div class="book-card">
+        <img src="${b.image || ''}" alt="${title}" onerror="this.style.display='none'">
+        <div class="info">
+          <div class="title">${title}</div>
+          <div class="author">${author}</div>
+          <div class="publisher">${b.publisher}</div>
+        </div>
+      </div>`;
+  });
+  grid.appendChild(bookGrid);
+  right.innerHTML = '';
+  right.appendChild(grid);
+}
+
+let currentTab = 'trend';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', Object.keys(TABS)[i] === tab);
+  });
+  renderForm(tab);
+  document.getElementById('rightPanel').innerHTML = '<div class="empty"><div class="glyph">📖</div><p>정보를 입력하고<br>분석을 시작해주세요.</p></div>';
+}
+
+function renderForm(tab) {
+  const form = TABS[tab];
+  const left = document.getElementById('leftPanel');
+  let html = '';
+  form.fields.forEach(f => {
+    if (f.type === 'input') {
+      html += `<div class="field"><label>${f.label}</label><input id="${f.id}" placeholder="${f.placeholder || ''}"></div>`;
+    } else if (f.type === 'select') {
+      html += `<div class="field"><label>${f.label}</label><select id="${f.id}">${f.options.map(o => `<option>${o}</option>`).join('')}</select></div>`;
+    } else if (f.type === 'textarea') {
+      html += `<div class="field"><label>${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder || ''}"></textarea></div>`;
+    } else if (f.type === 'file') {
+      html += `<div class="field"><label>${f.label}</label><input type="file" id="${f.id}" accept=".pdf,.docx,.txt"></div>`;
+    }
+  });
+  html += `<div class="divider"></div><button class="btn" onclick="runAgent()">분석 시작</button>`;
+  left.innerHTML = html;
+}
+
+async function runAgent() {
+  const form = TABS[currentTab];
+  const vals = {};
+  let file = null;
+  form.fields.forEach(f => {
+    if (f.type === 'file') {
+      const el = document.getElementById(f.id);
+      if (el && el.files[0]) file = el.files[0];
+    } else {
+      const el = document.getElementById(f.id);
+      vals[f.id] = el ? el.value.trim() : '';
+    }
+  });
+
+  const btn = document.querySelector('.btn');
+  const right = document.getElementById('rightPanel');
+  btn.disabled = true;
+  right.innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div><span>AI가 분석 중입니다…</span></div>';
+
+  try {
+    const result = await form.run(vals, file);
+    const existing = right.querySelector('.section-title') ? right.innerHTML : '';
+    if (existing) {
+      right.innerHTML = existing + `
