@@ -7,7 +7,7 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: #f5f4f0; color: #1a1a1a; }
-header { background: #1a1a1a; color: #fff; padding: 16px 24px; }
+header { background: #1a1a1a; color: #fff; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
 header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 .tabs { display: flex; background: #fff; border-bottom: 1px solid #e0e0e0; padding: 0 24px; overflow-x: auto; }
 .tab { padding: 14px 18px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; white-space: nowrap; }
@@ -26,6 +26,7 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 .divider { height: 1px; background: #f0f0f0; margin: 16px 0; }
 .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #ccc; text-align: center; }
 .empty .glyph { font-size: 48px; margin-bottom: 16px; }
+.empty p { font-size: 14px; line-height: 1.8; }
 .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 16px; color: #888; }
 .dots { display: flex; gap: 6px; }
 .dots span { width: 8px; height: 8px; background: #1a1a1a; border-radius: 50%; animation: bounce 1.2s infinite; }
@@ -33,21 +34,20 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 .dots span:nth-child(3) { animation-delay: 0.4s; }
 @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-10px)} }
 .result-box { background: #fff; border-radius: 8px; padding: 24px; white-space: pre-wrap; font-size: 14px; line-height: 1.8; }
-.section-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; margin-top: 24px; }
-.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
 .book-card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-.book-card img { width: 100%; height: 190px; object-fit: cover; }
-.book-card .info { padding: 10px; }
+.book-card img { width: 100%; height: 200px; object-fit: cover; }
+.book-card .info { padding: 12px; }
 .book-card .title { font-size: 12px; font-weight: 600; margin-bottom: 4px; line-height: 1.4; }
 .book-card .author { font-size: 11px; color: #888; }
 .book-card .publisher { font-size: 11px; color: #aaa; }
+.section-title { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; margin-top: 24px; }
 .comp-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 24px; font-size: 13px; }
 .comp-table th { background: #1a1a1a; color: #fff; padding: 12px 14px; text-align: left; font-weight: 600; font-size: 12px; }
 .comp-table td { padding: 11px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; line-height: 1.5; }
 .comp-table tr:last-child td { border-bottom: none; }
 .comp-table tr:hover td { background: #f9f9f9; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #f0f0f0; color: #555; }
-.status-bar { background: #f0f0f0; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #666; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -68,81 +68,35 @@ header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; }
 <script>
 const SERVER = 'https://bookfarmers-server-production.up.railway.app';
 
-async function callAI(prompt) {
-  const fd = new FormData();
-  fd.append('prompt', prompt);
-  const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
-  const data = await res.json();
-  return data.result || data.error || '결과를 가져올 수 없습니다.';
-}
-
-async function callAIWithFile(prompt, file) {
-  const fd = new FormData();
-  fd.append('prompt', prompt);
-  if (file) fd.append('file', file);
-  const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
-  const data = await res.json();
-  return data.result || data.error || '결과를 가져올 수 없습니다.';
-}
-
-async function fetchBooks(query, display = 30, sort = 'date') {
-  const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(query)}&display=${display}&sort=${sort}`);
-  const data = await res.json();
-  return data.items || [];
-}
-
-async function fetchNews(query) {
-  const res = await fetch(`${SERVER}/api/news?query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  return data.items || [];
-}
-
-const GENRE_MAP = {
-  '소설/에세이': ['소설 베스트셀러', '에세이 베스트셀러'],
-  '인문/교양': ['인문 베스트셀러', '교양 베스트셀러'],
-  '자기계발': ['자기계발 베스트셀러'],
-  '경제경영': ['경제경영 베스트셀러']
-};
-
 const GENRE_TITLE_PATTERN = {
-  '소설/에세이': '감성적·시적 제목, 인물/장소 중심, 은유적 표현 선호. 예: "채식주의자", "82년생 김지영", "아몬드"',
-  '인문/교양': '질문형 또는 명사형 제목, 지적 호기심 자극. 예: "총균쇠", "왜 세계의 절반은 굶주리는가"',
-  '자기계발': '직관적·숫자형·행동 유발형. 예: "미라클 모닝", "1만 시간의 법칙", "아주 작은 습관의 힘"',
-  '경제경영': '트렌드 키워드 + 실용적 제목. 예: "부의 추월차선", "주식 투자 무작정 따라하기"'
+  '소설/에세이': '감성적·시적 제목, 인물/장소 중심, 은유적 표현. 예: 채식주의자, 82년생 김지영, 아몬드',
+  '인문/교양': '질문형 또는 명사형, 지적 호기심 자극. 예: 총균쇠, 왜 세계의 절반은 굶주리는가',
+  '자기계발': '직관적·숫자형·행동 유발형. 예: 미라클 모닝, 아주 작은 습관의 힘, 1만 시간의 법칙',
+  '경제경영': '트렌드 키워드 + 실용형. 예: 부의 추월차선, 넥스트 레벨'
 };
 
 const TABS = {
   trend: {
     fields: [
       { id: 'keyword', label: '검색 키워드', type: 'input', placeholder: '예: 자기계발, 감정, 관계' },
-      { id: 'genre', label: '분야', type: 'select', options: ['전체', '소설/에세이', '인문/교양', '자기계발', '경제경영'] },
+      { id: 'genre', label: '분야', type: 'select', options: ['전체', '소설/에세이', '인문/교양', '자기계발', '경제경영', '과학', '역사'] },
     ],
     run: async (v) => {
       const right = document.getElementById('rightPanel');
-      right.innerHTML = '<div class="status-bar">📡 네이버 책 검색 중…</div>';
+      const [booksRes, newsRes] = await Promise.all([
+        fetch(`${SERVER}/api/books?query=${encodeURIComponent(v.keyword)}&display=30&sort=date`),
+        fetch(`${SERVER}/api/news?query=${encodeURIComponent('예스24 베스트셀러 ' + (v.genre !== '전체' ? v.genre : v.keyword))}`)
+      ]);
+      const booksData = await booksRes.json();
+      const newsData = await newsRes.json();
+      const books = booksData.items || [];
+      const news = newsData.items || [];
 
-      const books = await fetchBooks(v.keyword, 30, 'date');
+      renderBooks(books);
 
-      if (books.length) {
-        right.innerHTML = `<div class="section-title">🔍 최신 도서 (${books.length}건)</div>`;
-        let grid = '<div class="book-grid">';
-        books.slice(0,12).forEach(b => {
-          const title = b.title.replace(/<[^>]+>/g,'');
-          const author = b.author.replace(/<[^>]+>/g,'');
-          grid += `<div class="book-card"><img src="${b.image||''}" alt="${title}" onerror="this.style.display='none'">
-            <div class="info"><div class="title">${title}</div><div class="author">${author}</div><div class="publisher">${b.publisher}</div></div></div>`;
-        });
-        right.innerHTML += grid + '</div>';
-      }
+      const bookList = books.slice(0,15).map(b=>`${b.title.replace(/<[^>]+>/g,'')} / ${b.author.replace(/<[^>]+>/g,'')} / ${b.publisher}`).join('\n');
+      const newsText = news.map(n=>n.title+' '+n.description).join('\n');
 
-      right.innerHTML += '<div class="status-bar">📰 예스24 베스트셀러 뉴스 수집 중…</div>';
-      const newsQuery = v.genre !== '전체' ? `예스24 베스트셀러 ${v.genre}` : `예스24 베스트셀러 ${v.keyword}`;
-      const news = await fetchNews(newsQuery);
-      const newsText = news.map(n => n.title + ' ' + n.description).join('\n');
-
-      right.querySelector('.status-bar:last-of-type').textContent = '🤖 AI 트렌드 분석 중…';
-
-      const bookList = books.slice(0,20).map(b=>`${b.title.replace(/<[^>]+>/g,'')} / ${b.author.replace(/<[^>]+>/g,'')} / ${b.publisher}`).join('\n');
       const prompt = `출판 기획편집자를 위한 도서시장 트렌드 분석을 해주세요.
 
 키워드: ${v.keyword}
@@ -154,27 +108,13 @@ ${bookList}
 [예스24 베스트셀러 뉴스]
 ${newsText}
 
-다음 형식으로 분석해주세요:
+【이번 트렌드 핵심 요약】3줄 이내
+【주목할 도서 & 기획 포인트】3권 선정
+【공통 키워드 & 독자 니즈】키워드 5개 + 각 설명
+【기획 인사이트】시사점 3가지
+【추천 기획 방향】신간 아이디어 2개`;
 
-【이번 트렌드 핵심 요약】
-3줄 이내
-
-【주목할 도서 & 기획 포인트】
-3권 선정, 각 도서별 기획 포인트
-
-【공통 키워드 & 독자 니즈】
-키워드 5개 + 각 설명
-
-【기획 인사이트】
-다음 기획에 반영할 시사점 3가지
-
-【추천 기획 방향】
-이 트렌드를 활용한 신간 기획 아이디어 2개`;
-
-      const aiResult = await callAI(prompt);
-      const statusBars = right.querySelectorAll('.status-bar');
-      statusBars.forEach(el => el.remove());
-      right.innerHTML += `<div class="section-title">🤖 AI 트렌드 분석</div><div class="result-box">${aiResult}</div>`;
+      return await callAI(prompt);
     }
   },
 
@@ -186,10 +126,11 @@ ${newsText}
     ],
     run: async (v) => {
       const right = document.getElementById('rightPanel');
-      right.innerHTML = '<div class="status-bar">📡 유사 도서 검색 중…</div>';
+      const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(v.keyword)}&display=30&sort=sim`);
+      const data = await res.json();
+      const books = data.items || [];
 
-      const books = await fetchBooks(v.keyword, 30, 'sim');
-
+      // 비교표 렌더링
       right.innerHTML = `<div class="section-title">🔍 유사 도서 비교표 (${books.length}건)</div>`;
       let tableHtml = `<table class="comp-table"><thead><tr>
         <th>표지</th><th>제목</th><th>저자</th><th>출판사</th><th>출간일</th><th>가격</th>
@@ -210,7 +151,6 @@ ${newsText}
       });
       tableHtml += '</tbody></table>';
       right.innerHTML += tableHtml;
-      right.innerHTML += '<div class="status-bar">🤖 AI 경쟁 분석 중…</div>';
 
       const bookList = books.slice(0,15).map(b=>`제목: ${b.title.replace(/<[^>]+>/g,'')} / 저자: ${b.author.replace(/<[^>]+>/g,'')} / 출판사: ${b.publisher} / 출간: ${b.pubdate||'-'} / 가격: ${b.discount||'-'}원`).join('\n');
       const prompt = `출판 기획편집자를 위한 경쟁도서 분석을 해주세요.
@@ -218,17 +158,16 @@ ${newsText}
 내 책: ${v.mytitle}
 차별화 포인트: ${v.point}
 
-경쟁 도서 목록 (${books.length}권):
+경쟁 도서 목록:
 ${bookList}
 
 【경쟁 강도 평가】상/중/하 + 이유
 【경쟁도서 핵심 특징】상위 5권 각각 타깃독자·강점·약점
-【시장 내 포지셔닝 제안】내 책이 파고들 수 있는 틈새
+【시장 내 포지셔닝 제안】내 책이 파고들 틈새
 【차별화 전략】경쟁도서 대비 강조 포인트 3가지
-【마케팅 방향 제안】이 경쟁 구도에서 효과적인 마케팅 전략`;
+【마케팅 방향 제안】효과적인 마케팅 전략`;
 
       const aiResult = await callAI(prompt);
-      right.querySelector('.status-bar').remove();
       right.innerHTML += `<div class="section-title">🤖 AI 경쟁 분석</div><div class="result-box">${aiResult}</div>`;
     }
   },
@@ -244,22 +183,21 @@ ${bookList}
       { id: 'file', label: '원고 파일 업로드 (PDF/DOCX/TXT)', type: 'file' },
     ],
     run: async (v, file) => {
-      const right = document.getElementById('rightPanel');
-      right.innerHTML = '<div class="status-bar">📡 베스트셀러 트렌드 수집 중…</div>';
-
-      const [books, news] = await Promise.all([
-        fetchBooks(v.keyword || v.genre, 30, 'sim'),
-        fetchNews(`예스24 베스트셀러 ${v.genre}`)
+      const [booksRes, newsRes] = await Promise.all([
+        fetch(`${SERVER}/api/books?query=${encodeURIComponent(v.keyword || v.genre)}&display=30&sort=sim`),
+        fetch(`${SERVER}/api/news?query=${encodeURIComponent('예스24 베스트셀러 ' + v.genre)}`)
       ]);
+      const booksData = await booksRes.json();
+      const newsData = await newsRes.json();
+      const books = booksData.items || [];
+      const news = newsData.items || [];
 
-      right.querySelector('.status-bar').textContent = '🤖 제목안 & 카피 생성 중… (30초~1분 소요)';
-
-      const bookTitles = books.slice(0,20).map(b => b.title.replace(/<[^>]+>/g,'')).join(', ');
-      const newsText = news.map(n => n.title + ' ' + n.description).join('\n');
+      const bookTitles = books.slice(0,20).map(b=>b.title.replace(/<[^>]+>/g,'')).join(', ');
+      const newsText = news.map(n=>n.title+' '+n.description).join('\n');
       const titlePattern = GENRE_TITLE_PATTERN[v.genre] || '';
 
       const prompt = `당신은 대한민국 최고의 출판 기획편집자이자 카피라이터입니다.
-아래 정보를 바탕으로 베스트셀러가 될 제목안 10개와 마케팅 카피를 작성해주세요.
+아래 정보와 최신 베스트셀러 트렌드를 반영하여 베스트셀러가 될 제목안 10개와 마케팅 카피를 작성해주세요.
 
 [도서 정보]
 저자: ${v.author}
@@ -269,7 +207,31 @@ ${bookList}
 핵심 키워드: ${v.keyword}
 책 소개: ${v.desc}
 
-[${v.genre} 분야 제목 패턴]
+[${v.genre} 분야 베스트셀러 제목 패턴]
 ${titlePattern}
 
-[현재 베스트셀러 제목 트렌드
+[현재 베스트셀러 제목 트렌드 - 네이버 책 검색 30권]
+${bookTitles}
+
+[예스24 베스트셀러 뉴스]
+${newsText}
+
+【제목안 10개】
+각 제목마다:
+- 제목 (부제 있으면 포함):
+- 기획 의도: 왜 이 제목이 베스트셀러가 될 수 있는지 한 줄
+
+【띠지 문구】
+버전 A (감성형):
+버전 B (질문형):
+버전 C (선언형):
+
+【POP/배너 문구】
+버전 A (짧고 강렬, 10자 이내):
+버전 B (독자 공감형):
+
+【책 소개글】
+(3~4줄, 서점 온라인 노출용)
+
+【SNS 카피】
+(인스타그램용, 2~3줄 + 해시태그 5개)`;
