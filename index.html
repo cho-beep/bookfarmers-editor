@@ -15,8 +15,7 @@
     --accent-light: #eaf2ea; --accent-lighter: #f2f8f2;
     --border: rgba(0,0,0,0.09); --border2: rgba(0,0,0,0.05);
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-    --shadow-lg: 0 2px 8px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
-    --radius: 8px; --radius-lg: 12px; --radius-xl: 16px; --sidebar: 220px;
+    --radius: 8px; --radius-lg: 12px; --sidebar: 220px;
   }
   html, body { height: 100%; font-family: 'Noto Sans KR', sans-serif; background: var(--surface2); color: var(--ink); font-size: 14px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
   .app { display: flex; height: 100vh; overflow: hidden; }
@@ -39,8 +38,6 @@
   .panel { display: none; animation: fadeIn 0.2s ease; }
   .panel.on { display: block; }
   @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
-  .section { margin-bottom: 22px; }
-  .section-label { font-size: 11px; font-weight: 500; color: var(--ink3); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
   .field-label { font-size: 13px; font-weight: 500; color: var(--ink2); margin-bottom: 8px; }
   .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 16px; }
   .card-title { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border2); }
@@ -48,7 +45,7 @@
   .chip { padding: 6px 14px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; color: var(--ink3); background: var(--surface); transition: all 0.12s; user-select: none; }
   .chip:hover { border-color: var(--accent3); color: var(--accent); background: var(--accent-lighter); }
   .chip.on { background: var(--accent-light); border-color: var(--accent2); color: var(--accent); font-weight: 500; }
-  input[type=text], textarea, select { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: var(--ink); background: #fff; outline: none; transition: border 0.12s, box-shadow 0.12s; line-height: 1.7; }
+  input[type=text], textarea, select { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: var(--ink); background: #fff; outline: none; transition: border 0.12s; line-height: 1.7; }
   input[type=text]:focus, textarea:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(44,74,46,0.08); }
   textarea { resize: vertical; min-height: 100px; }
   .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -60,9 +57,8 @@
   .file-name { font-size: 12px; color: var(--accent); margin-top: 6px; font-weight: 500; }
   .hint { font-size: 11px; color: var(--ink4); margin-top: 6px; }
   .multi-note { font-size: 11px; color: var(--ink3); margin-bottom: 8px; }
-  .run-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px; margin-top: 4px; }
+  .run-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.15s; margin-top: 4px; }
   .run-btn:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(44,74,46,0.25); }
-  .run-btn:active { transform: translateY(0); }
   .run-btn .arrow { font-size: 14px; transition: transform 0.15s; }
   .run-btn:hover .arrow { transform: translateX(3px); }
   .output-wrap { display: none; margin-top: 24px; animation: fadeIn 0.2s ease; }
@@ -71,7 +67,6 @@
   .output-label { font-size: 11px; font-weight: 500; color: var(--ink3); letter-spacing: 0.8px; text-transform: uppercase; }
   .output-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .otab { padding: 5px 13px; font-size: 11.5px; font-family: 'Noto Sans KR', sans-serif; border: 1px solid var(--border); border-radius: 20px; cursor: pointer; color: var(--ink3); background: #fff; transition: all 0.12s; }
-  .otab:hover { color: var(--ink); }
   .otab.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
   .output-box { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; font-size: 13px; line-height: 1.9; color: var(--ink2); white-space: pre-wrap; min-height: 120px; box-shadow: var(--shadow); position: relative; }
   .copy-btn { position: absolute; top: 12px; right: 14px; padding: 4px 11px; font-size: 11px; font-family: 'Noto Sans KR', sans-serif; border: 1px solid var(--border); border-radius: 5px; cursor: pointer; color: var(--ink3); background: var(--surface2); transition: all 0.12s; }
@@ -92,9 +87,7 @@
   .comp-table tr:hover td { background: var(--surface2); }
   .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; font-size: 11px; background: var(--accent-light); color: var(--accent); }
   ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--ink4); }
 </style>
 </head>
 <body>
@@ -111,7 +104,7 @@
       <div class="nav-item" onclick="switchPanel(3)"><div class="nav-num">④</div><span>제목·카피 작성</span></div>
       <div class="nav-item" onclick="switchPanel(4)"><div class="nav-num">⑤</div><span>보도자료</span></div>
     </nav>
-    <div class="sidebar-footer">Powered by Gemini API + Naver Books<br>국립국어원 한글맞춤법 기준</div>
+    <div class="sidebar-footer">Powered by Gemini + Naver Books API<br>국립국어원 한글맞춤법 기준</div>
   </div>
 
   <div class="main">
@@ -136,20 +129,16 @@
         </div>
         <div class="card">
           <div class="card-title">원고 입력</div>
-          <div class="section">
-            <div class="field-label">텍스트 입력</div>
-            <textarea id="ms-text" placeholder="원고 텍스트를 붙여넣으세요 (일부 발췌도 가능)" style="min-height:160px"></textarea>
-          </div>
+          <div class="field-label">텍스트 입력</div>
+          <textarea id="ms-text" placeholder="원고 텍스트를 붙여넣으세요 (일부 발췌도 가능)" style="min-height:160px"></textarea>
           <div class="divider"></div>
-          <div class="section">
-            <div class="field-label">파일 업로드</div>
-            <div class="file-zone" onclick="document.getElementById('ms-file').click()">
-              <div class="file-zone-text"><strong>파일 선택</strong> 또는 드래그</div>
-              <div class="file-zone-text" style="margin-top:4px">PDF · DOCX · TXT</div>
-              <div class="file-name" id="ms-filename"></div>
-            </div>
-            <input type="file" id="ms-file" style="display:none" accept=".pdf,.docx,.txt" onchange="showFile('ms-file','ms-filename')">
+          <div class="field-label">파일 업로드</div>
+          <div class="file-zone" onclick="document.getElementById('ms-file').click()">
+            <div class="file-zone-text"><strong>파일 선택</strong> 또는 드래그</div>
+            <div class="file-zone-text" style="margin-top:4px">PDF · DOCX · TXT</div>
+            <div class="file-name" id="ms-filename"></div>
           </div>
+          <input type="file" id="ms-file" style="display:none" accept=".pdf,.docx,.txt" onchange="showFile('ms-file','ms-filename')">
         </div>
         <button class="run-btn" onclick="runAgent(0)">원고 분석 시작 <span class="arrow">→</span></button>
         <div class="output-wrap" id="out-0">
@@ -182,15 +171,13 @@
           <div class="card-title">텍스트 입력</div>
           <textarea id="proof-text" placeholder="교정·교열할 텍스트를 입력하세요" style="min-height:160px"></textarea>
           <div class="divider"></div>
-          <div class="section" style="margin-bottom:0">
-            <div class="field-label">파일 업로드</div>
-            <div class="file-zone" onclick="document.getElementById('proof-file').click()">
-              <div class="file-zone-text"><strong>파일 선택</strong> 또는 드래그</div>
-              <div class="file-zone-text" style="margin-top:4px">PDF · DOCX · TXT</div>
-              <div class="file-name" id="proof-filename"></div>
-            </div>
-            <input type="file" id="proof-file" style="display:none" accept=".pdf,.docx,.txt" onchange="showFile('proof-file','proof-filename')">
+          <div class="field-label">파일 업로드</div>
+          <div class="file-zone" onclick="document.getElementById('proof-file').click()">
+            <div class="file-zone-text"><strong>파일 선택</strong> 또는 드래그</div>
+            <div class="file-zone-text" style="margin-top:4px">PDF · DOCX · TXT</div>
+            <div class="file-name" id="proof-filename"></div>
           </div>
+          <input type="file" id="proof-file" style="display:none" accept=".pdf,.docx,.txt" onchange="showFile('proof-file','proof-filename')">
         </div>
         <button class="run-btn" onclick="runAgent(1)">교정·교열 시작 <span class="arrow">→</span></button>
         <div class="output-wrap" id="out-1">
@@ -208,18 +195,9 @@
         <div class="card">
           <div class="card-title">도서 정보 입력</div>
           <div class="input-grid">
-            <div>
-              <div class="field-label">도서 제목</div>
-              <input type="text" id="comp-title" placeholder="예: 아주 보통의 하루">
-            </div>
-            <div>
-              <div class="field-label">분야</div>
-              <input type="text" id="comp-genre" placeholder="예: 에세이, 자기계발">
-            </div>
-            <div class="full">
-              <div class="field-label">핵심 키워드</div>
-              <input type="text" id="comp-keyword" placeholder="예: 번아웃, 직장인, 회복">
-            </div>
+            <div><div class="field-label">도서 제목</div><input type="text" id="comp-title" placeholder="예: 아주 보통의 하루"></div>
+            <div><div class="field-label">분야</div><input type="text" id="comp-genre" placeholder="예: 에세이, 자기계발"></div>
+            <div class="full"><div class="field-label">핵심 키워드</div><input type="text" id="comp-keyword" placeholder="예: 번아웃, 직장인, 회복"></div>
           </div>
         </div>
         <div class="card">
@@ -248,10 +226,7 @@
         <div class="card">
           <div class="card-title">도서 정보 + 핵심 메시지</div>
           <div class="input-grid">
-            <div>
-              <div class="field-label">저자</div>
-              <input type="text" id="copy-author" placeholder="저자명">
-            </div>
+            <div><div class="field-label">저자</div><input type="text" id="copy-author" placeholder="저자명"></div>
             <div>
               <div class="field-label">분야</div>
               <select id="copy-genre">
@@ -261,18 +236,9 @@
                 <option>경제경영</option>
               </select>
             </div>
-            <div>
-              <div class="field-label">주요 독자</div>
-              <input type="text" id="copy-target" placeholder="예: 30대 직장인 여성">
-            </div>
-            <div>
-              <div class="field-label">핵심 키워드</div>
-              <input type="text" id="copy-keyword" placeholder="예: 바다, 소년, 성장, 경계">
-            </div>
-            <div class="full">
-              <div class="field-label">핵심 메시지</div>
-              <textarea id="copy-msg" placeholder="책의 핵심 내용과 독자에게 전달하고 싶은 메시지를 입력하세요" style="min-height:80px"></textarea>
-            </div>
+            <div><div class="field-label">주요 독자</div><input type="text" id="copy-target" placeholder="예: 30대 직장인 여성"></div>
+            <div><div class="field-label">핵심 키워드</div><input type="text" id="copy-keyword" placeholder="예: 바다, 소년, 성장, 경계"></div>
+            <div class="full"><div class="field-label">핵심 메시지</div><textarea id="copy-msg" placeholder="책의 핵심 내용과 독자에게 전달하고 싶은 메시지를 입력하세요" style="min-height:80px"></textarea></div>
           </div>
         </div>
         <div class="card">
@@ -286,29 +252,25 @@
         </div>
         <div class="card">
           <div class="card-title">카피 종류 + 톤</div>
-          <div class="section">
-            <div class="field-label">카피 종류</div>
-            <div class="multi-note">복수 선택 가능</div>
-            <div class="chips" id="copy-kind">
-              <div class="chip" onclick="toggleMulti(this)">띠지·뒷표지용</div>
-              <div class="chip" onclick="toggleMulti(this)">POP·배너</div>
-              <div class="chip" onclick="toggleMulti(this)">SNS</div>
-            </div>
+          <div class="field-label">카피 종류</div>
+          <div class="multi-note">복수 선택 가능</div>
+          <div class="chips" id="copy-kind">
+            <div class="chip" onclick="toggleMulti(this)">띠지·뒷표지용</div>
+            <div class="chip" onclick="toggleMulti(this)">POP·배너</div>
+            <div class="chip" onclick="toggleMulti(this)">SNS</div>
           </div>
           <div class="divider"></div>
-          <div class="section" style="margin-bottom:0">
-            <div class="field-label">톤</div>
-            <div class="chips" id="copy-tone">
-              <div class="chip" onclick="toggleSingle(this,'copy-tone')">감성적</div>
-              <div class="chip" onclick="toggleSingle(this,'copy-tone')">지적</div>
-              <div class="chip" onclick="toggleSingle(this,'copy-tone')">도발적</div>
-              <div class="chip" onclick="toggleSingle(this,'copy-tone')">따뜻한</div>
-            </div>
+          <div class="field-label">톤</div>
+          <div class="chips" id="copy-tone">
+            <div class="chip" onclick="toggleSingle(this,'copy-tone')">감성적</div>
+            <div class="chip" onclick="toggleSingle(this,'copy-tone')">지적</div>
+            <div class="chip" onclick="toggleSingle(this,'copy-tone')">도발적</div>
+            <div class="chip" onclick="toggleSingle(this,'copy-tone')">따뜻한</div>
           </div>
         </div>
         <button class="run-btn" onclick="runAgent(3)">제목·카피 생성 <span class="arrow">→</span></button>
         <div class="output-wrap" id="out-3">
-          <div class="output-header"><div class="output-label">결과 (네이버 책 + 예스24 트렌드 반영)</div></div>
+          <div class="output-header"><div class="output-label">결과 — 네이버 책 + 예스24 트렌드 반영</div></div>
           <div class="output-tabs">
             <div class="otab on" onclick="switchOtab(3,0)">제목안 10개</div>
             <div class="otab" onclick="switchOtab(3,1)">띠지·뒷표지용</div>
@@ -326,7 +288,7 @@
           <div class="input-grid">
             <div><div class="field-label">도서 제목</div><input type="text" id="pr-title" placeholder="도서 제목"></div>
             <div><div class="field-label">저자</div><input type="text" id="pr-author" placeholder="저자명"></div>
-            <div><div class="field-label">옮긴이 (번역서)</div><input type="text" id="pr-translator" placeholder="역자명 (해당 없으면 비워두세요)"></div>
+            <div><div class="field-label">옮긴이 (번역서)</div><input type="text" id="pr-translator" placeholder="역자명"></div>
             <div><div class="field-label">출판사</div><input type="text" id="pr-pub" placeholder="출판사명"></div>
             <div><div class="field-label">출간일</div><input type="text" id="pr-date" placeholder="예: 2026. 4. 1"></div>
             <div><div class="field-label">정가</div><input type="text" id="pr-price" placeholder="예: 19,800원"></div>
@@ -337,13 +299,10 @@
             <div class="full"><div class="field-label">키워드</div><input type="text" id="pr-keyword" placeholder="예: 인생, 가족, 성장, 감동소설, 위로"></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-title">수상 및 화제성 (핵심 카피)</div>
-          <textarea id="pr-awards" placeholder="★ 항목을 줄바꿈으로 입력하세요&#10;예: 《선데이 타임스》 2025 올해의 책&#10;2026 더블린 문학상 노미네이트" style="min-height:100px"></textarea>
-        </div>
-        <div class="card"><div class="card-title">저자 소개</div><textarea id="pr-bio" placeholder="저자 약력을 입력하세요" style="min-height:90px"></textarea></div>
-        <div class="card"><div class="card-title">역자 소개 (번역서)</div><textarea id="pr-trans-bio" placeholder="역자 약력을 입력하세요 (해당 없으면 비워두세요)" style="min-height:90px"></textarea></div>
-        <div class="card"><div class="card-title">추천의 글 (선택)</div><textarea id="pr-blurb" placeholder="매체·인물 추천사를 입력하세요" style="min-height:90px"></textarea></div>
+        <div class="card"><div class="card-title">수상 및 화제성</div><textarea id="pr-awards" placeholder="★ 항목을 줄바꿈으로 입력&#10;예: 《선데이 타임스》 2025 올해의 책" style="min-height:100px"></textarea></div>
+        <div class="card"><div class="card-title">저자 소개</div><textarea id="pr-bio" placeholder="저자 약력" style="min-height:90px"></textarea></div>
+        <div class="card"><div class="card-title">역자 소개 (번역서)</div><textarea id="pr-trans-bio" placeholder="역자 약력 (해당 없으면 비워두세요)" style="min-height:90px"></textarea></div>
+        <div class="card"><div class="card-title">추천의 글 (선택)</div><textarea id="pr-blurb" placeholder="매체·인물 추천사" style="min-height:90px"></textarea></div>
         <div class="card">
           <div class="card-title">원고 파일 업로드</div>
           <div class="file-zone" onclick="document.getElementById('pr-ms-file').click()">
@@ -389,7 +348,7 @@ const TOPBAR = [
   {title:'원고 검토', badge:'원고 분석'},
   {title:'교정·교열', badge:'맞춤법 기준'},
   {title:'경쟁도서 분석', badge:'네이버 책 + 예스24'},
-  {title:'제목·카피 작성', badge:'트렌드 반영'},
+  {title:'제목·카피 작성', badge:'베스트셀러 트렌드 반영'},
   {title:'보도자료', badge:'즉시 생성'},
 ];
 
@@ -409,10 +368,10 @@ const tagNames = [
 ];
 
 const GENRE_TITLE_PATTERN = {
-  '소설/에세이': '감성적·시적 제목, 인물/장소 중심, 은유적 표현. 예: 채식주의자, 82년생 김지영, 아몬드',
-  '인문/교양': '질문형 또는 명사형, 지적 호기심 자극. 예: 총균쇠, 왜 세계의 절반은 굶주리는가',
-  '자기계발': '직관적·숫자형·행동 유발형. 예: 미라클 모닝, 아주 작은 습관의 힘, 1만 시간의 법칙',
-  '경제경영': '트렌드 키워드 + 실용형. 예: 부의 추월차선, 넥스트 레벨'
+  '소설/에세이': '감성적·시적 제목, 인물/장소 중심, 은유적 표현. 성공 사례: 채식주의자, 82년생 김지영, 아몬드, 파친코, 달러구트 꿈 백화점',
+  '인문/교양': '질문형 또는 명사형, 지적 호기심 자극. 성공 사례: 총균쇠, 사피엔스, 왜 세계의 절반은 굶주리는가, 정의란 무엇인가',
+  '자기계발': '직관적·숫자형·행동 유발형. 성공 사례: 미라클 모닝, 아주 작은 습관의 힘, 1만 시간의 법칙, 도둑맞은 집중력, 나는 4시간만 일한다',
+  '경제경영': '트렌드 키워드 + 실용형. 성공 사례: 부의 추월차선, 트렌드 코리아, 넥스트 레벨, 돈의 심리학'
 };
 
 function switchPanel(i){
@@ -421,252 +380,139 @@ function switchPanel(i){
   document.getElementById('topbar-title').textContent = TOPBAR[i].title;
   document.getElementById('topbar-badge').textContent = TOPBAR[i].badge;
 }
-
-function toggleSingle(el, groupId){
-  document.querySelectorAll('#'+groupId+' .chip').forEach(c=>c.classList.remove('on'));
-  el.classList.toggle('on');
-}
-
+function toggleSingle(el,groupId){ document.querySelectorAll('#'+groupId+' .chip').forEach(c=>c.classList.remove('on')); el.classList.toggle('on'); }
 function toggleMulti(el){ el.classList.toggle('on'); }
+function showFile(inputId,nameId){ const f=document.getElementById(inputId).files[0]; if(f) document.getElementById(nameId).textContent=f.name; }
+function getChips(id){ return Array.from(document.querySelectorAll('#'+id+' .chip.on')).map(c=>c.textContent).join(', '); }
 
-function showFile(inputId, nameId){
-  const f = document.getElementById(inputId).files[0];
-  if(f) document.getElementById(nameId).textContent = f.name;
-}
-
-function getChips(containerId){
-  return Array.from(document.querySelectorAll('#'+containerId+' .chip.on')).map(c=>c.textContent).join(', ');
-}
-
-function switchOtab(pi, ti){
-  const outEl = document.getElementById('out-'+pi);
-  outEl.querySelectorAll('.otab').forEach((t,j)=>t.classList.toggle('on',j===ti));
+function switchOtab(pi,ti){
+  document.querySelectorAll('#out-'+pi+' .otab').forEach((t,j)=>t.classList.toggle('on',j===ti));
   const key = otabKeys[pi][ti];
   const el = document.getElementById('oc-'+pi+'-text');
-  if(pi===2 && ti===1 && outputData[2]._tableHTML){
-    el.innerHTML = outputData[2]._tableHTML;
-  } else {
-    el.textContent = outputData[pi][key] || '';
-  }
+  if(pi===2 && ti===1 && outputData[2]._tableHTML){ el.innerHTML=outputData[2]._tableHTML; }
+  else { el.textContent=outputData[pi][key]||''; }
 }
 
-function copyOut(boxId, btn){
-  const text = document.getElementById(boxId+'-text').textContent;
-  navigator.clipboard.writeText(text).then(()=>{
-    btn.textContent = '복사됨';
-    setTimeout(()=>btn.textContent='복사', 1400);
-  });
+function copyOut(boxId,btn){
+  const text=document.getElementById(boxId+'-text').textContent;
+  navigator.clipboard.writeText(text).then(()=>{ btn.textContent='복사됨'; setTimeout(()=>btn.textContent='복사',1400); });
 }
 
 function setLoading(pi){
-  const el = document.getElementById('oc-'+pi+'-text');
-  el.innerHTML = '<div class="loading">분석 중<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>';
+  document.getElementById('oc-'+pi+'-text').innerHTML='<div class="loading">분석 중<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>';
   document.getElementById('out-'+pi).classList.add('on');
 }
 
-async function callAPI(prompt, fileInputId){
-  const formData = new FormData();
-  formData.append('prompt', prompt);
-  if(fileInputId){
-    const input = document.getElementById(fileInputId);
-    const file = input?.files?.[0];
-    if(file) formData.append('file', file);
-  }
-  const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: formData });
-  const data = await res.json();
+async function callAPI(prompt,fileInputId){
+  const fd=new FormData();
+  fd.append('prompt',prompt);
+  if(fileInputId){ const f=document.getElementById(fileInputId)?.files?.[0]; if(f) fd.append('file',f); }
+  const res=await fetch(`${SERVER}/api/analyze`,{method:'POST',body:fd});
+  const data=await res.json();
   if(data.error) throw new Error(data.error);
-  return data.result || '';
+  return data.result||'';
 }
 
-async function fetchBooks(query, display=30, sort='sim'){
-  const res = await fetch(`${SERVER}/api/books?query=${encodeURIComponent(query)}&display=${display}&sort=${sort}`);
-  const data = await res.json();
-  return data.items || [];
+async function fetchBooks(query,display=30,sort='sim'){
+  const res=await fetch(`${SERVER}/api/books?query=${encodeURIComponent(query)}&display=${display}&sort=${sort}`);
+  const data=await res.json();
+  return data.items||[];
 }
 
 async function fetchNews(query){
-  const res = await fetch(`${SERVER}/api/news?query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  return data.items || [];
+  const res=await fetch(`${SERVER}/api/news?query=${encodeURIComponent(query)}`);
+  const data=await res.json();
+  return data.items||[];
 }
 
 function buildCompTable(books){
-  let html = '<table class="comp-table"><thead><tr><th>표지</th><th>제목</th><th>저자</th><th>출판사</th><th>출간일</th><th>가격</th></tr></thead><tbody>';
+  let html='<table class="comp-table"><thead><tr><th>표지</th><th>제목</th><th>저자</th><th>출판사</th><th>출간일</th><th>가격</th></tr></thead><tbody>';
   books.slice(0,20).forEach(b=>{
-    const title = b.title.replace(/<[^>]+>/g,'');
-    const author = b.author.replace(/<[^>]+>/g,'');
-    const date = b.pubdate ? b.pubdate.slice(0,4)+'.'+b.pubdate.slice(4,6) : '-';
-    const price = b.discount ? parseInt(b.discount).toLocaleString()+'원' : '-';
-    html += `<tr>
-      <td><img src="${b.image||''}" style="width:40px;height:55px;object-fit:cover;border-radius:3px;" onerror="this.style.display='none'"></td>
-      <td><strong>${title}</strong></td>
-      <td>${author}</td>
-      <td><span class="badge">${b.publisher}</span></td>
-      <td>${date}</td>
-      <td>${price}</td>
-    </tr>`;
+    const title=b.title.replace(/<[^>]+>/g,'');
+    const author=b.author.replace(/<[^>]+>/g,'');
+    const date=b.pubdate?b.pubdate.slice(0,4)+'.'+b.pubdate.slice(4,6):'-';
+    const price=b.discount?parseInt(b.discount).toLocaleString()+'원':'-';
+    html+=`<tr><td><img src="${b.image||''}" style="width:40px;height:55px;object-fit:cover;border-radius:3px;" onerror="this.style.display='none'"></td><td><strong>${title}</strong></td><td>${author}</td><td><span class="badge">${b.publisher}</span></td><td>${date}</td><td>${price}</td></tr>`;
   });
-  html += '</tbody></table>';
-  return html;
+  return html+'</tbody></table>';
 }
 
-function parseOutput(pi, full){
-  if(pi===4){
-    outputData[4] = {press: full};
-    document.getElementById('oc-4-text').textContent = full;
-    document.getElementById('dl-btns').style.display = 'flex';
-    return;
-  }
-  const tags = tagNames[pi];
-  const keys = otabKeys[pi];
-  tags.forEach((tag,i)=>{
-    const regex = new RegExp('\\['+tag+'\\]([\\s\\S]*?)(?=\\[|$)');
-    const m = full.match(regex);
-    outputData[pi][keys[i]] = m ? m[1].trim() : '';
-  });
-  document.getElementById('oc-'+pi+'-text').textContent = outputData[pi][keys[0]] || full;
+function parseOutput(pi,full){
+  if(pi===4){ outputData[4]={press:full}; document.getElementById('oc-4-text').textContent=full; document.getElementById('dl-btns').style.display='flex'; return; }
+  const tags=tagNames[pi], keys=otabKeys[pi];
+  tags.forEach((tag,i)=>{ const m=full.match(new RegExp('\\['+tag+'\\]([\\s\\S]*?)(?=\\[|$)')); outputData[pi][keys[i]]=m?m[1].trim():''; });
+  document.getElementById('oc-'+pi+'-text').textContent=outputData[pi][keys[0]]||full;
   document.querySelectorAll('#out-'+pi+' .otab').forEach((t,j)=>t.classList.toggle('on',j===0));
 }
 
 async function runAgent(pi){
   setLoading(pi);
-  let prompt = '';
-
-  if(pi===0){
-    const genre = getChips('genre-chips');
-    const text = document.getElementById('ms-text').value;
-    const hasFile = document.getElementById('ms-file')?.files?.[0];
-    const content = text || '(파일에서 원고를 읽어 분석하세요)';
-    prompt = `당신은 출판사 기획편집자를 돕는 전문 원고 분석 AI입니다.
-분야: ${genre||'미선택'}
-${!hasFile ? `원고:\n"""\n${content}\n"""` : '첨부된 원고 파일을 읽고 아래 항목을 분석하세요.'}
-
-[줄거리·논지 요약]
-핵심 내용·주제·논지를 300자 내외로 요약하세요.
-[구조 분석]
-전체 구조, 챕터 구성, 흐름의 강점과 약점을 분석하세요.
-[편집 방향 제안]
-출판을 위한 구체적 편집 방향과 수정 우선순위를 제안하세요.
-[예상 독자층]
-핵심 독자층과 확장 독자층을 구체적으로 분석하세요.
-[핵심 세일즈 포인트]
-이 책의 출판·마케팅 관점에서 핵심 세일즈 포인트를 5~7가지로 추출하세요.
-[경쟁도서 분석]
-교보문고·yes24 베스트셀러 기준 유사 경쟁도서 5종과 차별화 포인트를 분석하세요.`;
-    try {
-      const full = await callAPI(prompt, hasFile ? 'ms-file' : null);
-      parseOutput(pi, full);
-    } catch(e) {
-      document.getElementById('oc-0-text').textContent = '오류: '+e.message;
+  try {
+    if(pi===0){
+      const genre=getChips('genre-chips'), text=document.getElementById('ms-text').value, hasFile=document.getElementById('ms-file')?.files?.[0];
+      const prompt=`당신은 출판사 기획편집자를 돕는 전문 원고 분석 AI입니다.\n분야: ${genre||'미선택'}\n${!hasFile?`원고:\n"""\n${text}\n"""`:''}\n\n[줄거리·논지 요약]\n핵심 내용·주제·논지를 300자 내외로 요약하세요.\n[구조 분석]\n전체 구조, 챕터 구성, 흐름의 강점과 약점을 분석하세요.\n[편집 방향 제안]\n출판을 위한 구체적 편집 방향과 수정 우선순위를 제안하세요.\n[예상 독자층]\n핵심 독자층과 확장 독자층을 구체적으로 분석하세요.\n[핵심 세일즈 포인트]\n출판·마케팅 관점에서 핵심 세일즈 포인트를 5~7가지로 추출하세요.\n[경쟁도서 분석]\n교보문고·yes24 베스트셀러 기준 유사 경쟁도서 5종과 차별화 포인트를 분석하세요.`;
+      parseOutput(pi, await callAPI(prompt, hasFile?'ms-file':null));
     }
-    return;
-  }
-
-  if(pi===1){
-    const grade = getChips('proof-chips');
-    const text = document.getElementById('proof-text').value;
-    const hasFile = document.getElementById('proof-file')?.files?.[0];
-    prompt = `당신은 국립국어원 한글맞춤법 기준의 전문 교정·교열 AI입니다.
-교열 강도: ${grade||'미선택'}
-${!hasFile ? `원문:\n"""\n${text}\n"""` : '첨부된 파일의 텍스트 전체를 교정·교열하세요.'}
-
-[수정본]
-입력된 텍스트 전체를 교정하세요. 수정된 부분마다 (※ 이유: ...) 주석을 다세요.
-[원문·수정문 대조]
-| 원문 | 수정문 | 수정 이유 |`;
-    try {
-      const full = await callAPI(prompt, hasFile ? 'proof-file' : null);
-      parseOutput(pi, full);
-    } catch(e) {
-      document.getElementById('oc-1-text').textContent = '오류: '+e.message;
+    else if(pi===1){
+      const grade=getChips('proof-chips'), text=document.getElementById('proof-text').value, hasFile=document.getElementById('proof-file')?.files?.[0];
+      const prompt=`당신은 국립국어원 한글맞춤법 기준의 전문 교정·교열 AI입니다.\n교열 강도: ${grade||'미선택'}\n${!hasFile?`원문:\n"""\n${text}\n"""`:''}\n\n[수정본]\n입력된 텍스트 전체를 교정하세요. 수정된 부분마다 (※ 이유: ...) 주석을 다세요.\n[원문·수정문 대조]\n| 원문 | 수정문 | 수정 이유 |`;
+      parseOutput(pi, await callAPI(prompt, hasFile?'proof-file':null));
     }
-    return;
-  }
-
-  if(pi===2){
-    const title = document.getElementById('comp-title').value;
-    const genre = document.getElementById('comp-genre').value;
-    const kw = document.getElementById('comp-keyword').value;
-    const purpose = getChips('comp-purpose');
-    try {
-      const books = await fetchBooks(kw || title, 30, 'sim');
-      const news = await fetchNews('예스24 베스트셀러 ' + (genre || kw));
-
-      // 비교표 HTML 저장
-      outputData[2]._tableHTML = buildCompTable(books);
-
-      const bookList = books.slice(0,15).map(b=>`제목: ${b.title.replace(/<[^>]+>/g,'')} / 저자: ${b.author.replace(/<[^>]+>/g,'')} / 출판사: ${b.publisher} / 출간: ${b.pubdate||'-'} / 가격: ${b.discount||'-'}원`).join('\n');
-      const newsText = news.map(n=>n.title+' '+n.description).join('\n');
-
-      prompt = `출판 시장 분석 전문가로서 경쟁도서를 분석해주세요.
-
-도서: ${title} / 분야: ${genre} / 키워드: ${kw} / 목적: ${purpose||'전체'}
-
-[네이버 책 검색 결과 ${books.length}권]
-${bookList}
-
-[예스24 베스트셀러 뉴스]
-${newsText}
-
-[유사 도서 리스트]
-베스트셀러 기준 상위 7종 분석 (제목·저자·출판사·베스트셀러 현황 포함)
-
-[비교표]
-| 도서명 | 핵심 주제 | 주요 독자층 | 가격대 | 강점 | 약점 |
-
-[차별화 포인트]
-분석 목적(${purpose})을 고려한 차별화 포인트와 포지셔닝 전략`;
-
-      const full = await callAPI(prompt);
-      parseOutput(pi, full);
-    } catch(e) {
-      document.getElementById('oc-2-text').textContent = '오류: '+e.message;
+    else if(pi===2){
+      const title=document.getElementById('comp-title').value, genre=document.getElementById('comp-genre').value, kw=document.getElementById('comp-keyword').value, purpose=getChips('comp-purpose');
+      const [books,news]=await Promise.all([fetchBooks(kw||title,30,'sim'), fetchNews('예스24 베스트셀러 '+(genre||kw))]);
+      outputData[2]._tableHTML=buildCompTable(books);
+      const bookList=books.slice(0,15).map(b=>`제목: ${b.title.replace(/<[^>]+>/g,'')} / 저자: ${b.author.replace(/<[^>]+>/g,'')} / 출판사: ${b.publisher} / 출간: ${b.pubdate||'-'} / 가격: ${b.discount||'-'}원`).join('\n');
+      const newsText=news.map(n=>n.title+' '+n.description).join('\n');
+      const prompt=`출판 시장 분석 전문가로서 경쟁도서를 분석해주세요.\n\n도서: ${title} / 분야: ${genre} / 키워드: ${kw} / 목적: ${purpose||'전체'}\n\n[네이버 책 검색 결과]\n${bookList}\n\n[예스24 베스트셀러 뉴스]\n${newsText}\n\n[유사 도서 리스트]\n베스트셀러 기준 상위 7종 분석 (제목·저자·출판사·베스트셀러 현황 포함)\n\n[비교표]\n| 도서명 | 핵심 주제 | 주요 독자층 | 가격대 | 강점 | 약점 |\n\n[차별화 포인트]\n분석 목적(${purpose})을 고려한 차별화 포인트와 포지셔닝 전략`;
+      parseOutput(pi, await callAPI(prompt));
     }
-    return;
-  }
+    else if(pi===3){
+      const author=document.getElementById('copy-author').value;
+      const genre=document.getElementById('copy-genre').value;
+      const target=document.getElementById('copy-target').value;
+      const keyword=document.getElementById('copy-keyword').value;
+      const msg=document.getElementById('copy-msg').value;
+      const hasFile=document.getElementById('copy-file')?.files?.[0];
+      const kind=getChips('copy-kind'), tone=getChips('copy-tone');
+      const [books,news]=await Promise.all([fetchBooks(keyword||genre,30,'sim'), fetchNews('예스24 베스트셀러 '+genre)]);
+      const bookTitles=books.slice(0,20).map(b=>b.title.replace(/<[^>]+>/g,'')).join(', ');
+      const newsText=news.map(n=>n.title+' '+n.description).join('\n');
+      const titlePattern=GENRE_TITLE_PATTERN[genre]||'';
 
-  if(pi===3){
-    const author = document.getElementById('copy-author').value;
-    const genre = document.getElementById('copy-genre').value;
-    const target = document.getElementById('copy-target').value;
-    const keyword = document.getElementById('copy-keyword').value;
-    const msg = document.getElementById('copy-msg').value;
-    const hasFile = document.getElementById('copy-file')?.files?.[0];
-    const kind = getChips('copy-kind');
-    const tone = getChips('copy-tone');
+      const prompt=`당신은 『82년생 김지영』『아주 작은 습관의 힘』『미라클 모닝』『트렌드 코리아』같은 밀리언셀러 제목을 만든 대한민국 최고의 출판 편집자입니다.
 
-    try {
-      const [books, news] = await Promise.all([
-        fetchBooks(keyword || genre, 30, 'sim'),
-        fetchNews('예스24 베스트셀러 ' + genre)
-      ]);
-
-      const bookTitles = books.slice(0,20).map(b=>b.title.replace(/<[^>]+>/g,'')).join(', ');
-      const newsText = news.map(n=>n.title+' '+n.description).join('\n');
-      const titlePattern = GENRE_TITLE_PATTERN[genre] || '';
-
-      prompt = `당신은 대한민국 최고의 출판 기획편집자이자 카피라이터입니다.
-최신 베스트셀러 트렌드를 철저히 반영하여 베스트셀러가 될 제목안 10개와 마케팅 카피를 작성하세요.
+베스트셀러 제목의 5가지 법칙:
+1. 독자가 "이거 나 얘기다" 즉각 공감하게 하라
+2. 서점 진열대에서 3초 안에 눈에 띄어야 한다
+3. 검색했을 때 클릭하고 싶은 제목이어야 한다
+4. 경쟁 도서와 확실히 달라야 한다
+5. 분야 문법을 따르되 반드시 한 끗 비틀어라
 
 [도서 정보]
 저자: ${author} / 분야: ${genre} / 주요 독자: ${target}
 톤: ${tone||'미선택'} / 핵심 키워드: ${keyword}
 핵심 메시지: ${msg}
-${hasFile ? '첨부 원고 파일을 읽고 내용을 반영하세요.' : ''}
+${hasFile?'(첨부 원고 파일 내용도 반영하세요)':''}
 
-[${genre} 분야 베스트셀러 제목 패턴]
+[${genre} 분야 밀리언셀러 제목 패턴 & 성공 사례]
 ${titlePattern}
 
-[현재 베스트셀러 제목 트렌드 - 네이버 책 검색 30권]
+[현재 시장 베스트셀러 제목 트렌드 — 네이버 책 검색 30권]
 ${bookTitles}
 
 [예스24 베스트셀러 뉴스]
 ${newsText}
 
+위 5가지 법칙과 트렌드를 철저히 분석한 뒤, 실제 출판 현장에서 바로 쓸 수 있는 제목안과 카피를 작성하세요.
+
 [제목안 10개]
+(각 제목은 반드시 위 5가지 법칙 중 최소 3가지를 충족해야 합니다)
 각 제목마다:
 - 제목 (부제 있으면 포함):
-- 기획 의도: 왜 이 제목이 베스트셀러가 될 수 있는지 한 줄
+- 왜 팔리는가: 독자 심리 + 트렌드 연결 한 줄
+- 경쟁도서 대비 차별점: 한 줄
+- 적용된 법칙: (1~5번 중 해당 번호)
 
 [띠지·뒷표지용]
 띠지 전면 문구(15자 내외) + 뒷표지 소개글(100자 내외) 세트 5개. 각 후보 뒤에 선택 이유 한 줄.
@@ -677,27 +523,20 @@ ${newsText}
 [SNS]
 인스타그램/페이스북용 홍보 문구 5개 (해시태그 포함, 150자 내외). 각 후보 뒤에 선택 이유 한 줄.`;
 
-      const full = await callAPI(prompt, hasFile ? 'copy-file' : null);
-      parseOutput(pi, full);
-    } catch(e) {
-      document.getElementById('oc-3-text').textContent = '오류: '+e.message;
+      parseOutput(pi, await callAPI(prompt, hasFile?'copy-file':null));
     }
-    return;
-  }
-
-  if(pi===4){
-    const v = id => (document.getElementById(id)||{}).value || '';
-    const hasFile = document.getElementById('pr-ms-file')?.files?.[0];
-    const awards = v('pr-awards').trim().split('\n').filter(l=>l.trim()).map(l=>`★ ${l.replace(/^★\s*/,'')} ★`).join('\n');
-    prompt = `당신은 출판사 홍보 전문가입니다. 아래 정보와 ${hasFile ? '첨부된 원고 파일을 바탕으로' : '입력된 정보만으로'} 북파머스 보도자료 포맷에 맞게 완성도 높은 보도자료를 작성하세요.
+    else if(pi===4){
+      const v=id=>(document.getElementById(id)||{}).value||'';
+      const hasFile=document.getElementById('pr-ms-file')?.files?.[0];
+      const awards=v('pr-awards').trim().split('\n').filter(l=>l.trim()).map(l=>`★ ${l.replace(/^★\s*/,'')} ★`).join('\n');
+      const prompt=`당신은 출판사 홍보 전문가입니다. ${hasFile?'첨부된 원고 파일을 바탕으로':'입력된 정보만으로'} 북파머스 보도자료 포맷에 맞게 완성도 높은 보도자료를 작성하세요.
 
 도서 제목: ${v('pr-title')} / 저자: ${v('pr-author')} / 옮긴이: ${v('pr-translator')||'없음'}
 출판사: ${v('pr-pub')} / 출간일: ${v('pr-date')} / 정가: ${v('pr-price')}
 분량: ${v('pr-pages')} / 판형·제본: ${v('pr-spec')} / 분야: ${v('pr-genre')}
 ISBN: ${v('pr-isbn')} / 키워드: ${v('pr-keyword')}
-수상·화제성: ${awards||'없음'}
-저자 소개: ${v('pr-bio')||'없음'} / 역자 소개: ${v('pr-trans-bio')||'없음'}
-추천의 글: ${v('pr-blurb')||'없음'}
+수상·화제성: ${awards||'없음'} / 저자 소개: ${v('pr-bio')||'없음'}
+역자 소개: ${v('pr-trans-bio')||'없음'} / 추천의 글: ${v('pr-blurb')||'없음'}
 
 [북파머스 보도자료 포맷]
 ─────────────────────────────
@@ -728,76 +567,73 @@ ISBN: ${v('pr-isbn')} / 키워드: ${v('pr-keyword')}
 ─────────────────────────────
 ${v('pr-web')}  담당: ${v('pr-manager')} / ${v('pr-email')}
 ─────────────────────────────`;
-    try {
-      const full = await callAPI(prompt, hasFile ? 'pr-ms-file' : null);
-      parseOutput(pi, full);
-    } catch(e) {
-      document.getElementById('oc-4-text').textContent = '오류: '+e.message;
+      parseOutput(pi, await callAPI(prompt, hasFile?'pr-ms-file':null));
     }
-    return;
+  } catch(e) {
+    document.getElementById('oc-'+pi+'-text').textContent='오류: '+e.message;
   }
 }
 
 function buildDocxChildren(text){
-  const { Paragraph, TextRun, AlignmentType, BorderStyle } = docx;
-  const children = [];
-  const pub = (document.getElementById('pr-pub')||{}).value || '';
-  children.push(new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: pub, size: 18, color: '888888', font: 'Malgun Gothic' })] }));
-  text.split('\n').forEach(line => {
-    const t = line.trim();
-    if(!t){ children.push(new Paragraph({ children: [new TextRun('')] })); return; }
-    if(/^─{3,}$/.test(t)){ children.push(new Paragraph({ border: { bottom: { style: BorderStyle.SINGLE, size: 3, color: 'CCCCCC', space: 1 } }, spacing: { after: 80 }, children: [new TextRun('')] })); return; }
-    if(t.startsWith('■')){ children.push(new Paragraph({ spacing: { before: 280, after: 100 }, children: [new TextRun({ text: t, bold: true, size: 25, font: 'Malgun Gothic', color: '1a1a1a' })] })); return; }
-    if(t.startsWith('★')){ children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 60 }, children: [new TextRun({ text: t, bold: true, size: 21, color: '2c4a2e', font: 'Malgun Gothic' })] })); return; }
-    if((t.startsWith('"')||t.startsWith('\u201c')) && (t.endsWith('"')||t.endsWith('\u201d'))){ children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 160, after: 160 }, children: [new TextRun({ text: t, bold: true, size: 24, color: '2c4a2e', font: 'Malgun Gothic', italics: true })] })); return; }
-    if(t.startsWith('·')){ children.push(new Paragraph({ spacing: { after: 40 }, children: [new TextRun({ text: t, size: 20, font: 'Malgun Gothic' })] })); return; }
-    if(t.includes('담당:')||t.startsWith('www.')){ children.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 120 }, children: [new TextRun({ text: t, size: 18, color: '888888', font: 'Malgun Gothic' })] })); return; }
-    children.push(new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: t, size: 21, font: 'Malgun Gothic' })] }));
+  const {Paragraph,TextRun,AlignmentType,BorderStyle}=docx;
+  const children=[];
+  const pub=(document.getElementById('pr-pub')||{}).value||'';
+  children.push(new Paragraph({alignment:AlignmentType.RIGHT,children:[new TextRun({text:pub,size:18,color:'888888',font:'Malgun Gothic'})]}));
+  text.split('\n').forEach(line=>{
+    const t=line.trim();
+    if(!t){children.push(new Paragraph({children:[new TextRun('')]}));return;}
+    if(/^─{3,}$/.test(t)){children.push(new Paragraph({border:{bottom:{style:BorderStyle.SINGLE,size:3,color:'CCCCCC',space:1}},spacing:{after:80},children:[new TextRun('')]}));return;}
+    if(t.startsWith('■')){children.push(new Paragraph({spacing:{before:280,after:100},children:[new TextRun({text:t,bold:true,size:25,font:'Malgun Gothic',color:'1a1a1a'})]}));return;}
+    if(t.startsWith('★')){children.push(new Paragraph({alignment:AlignmentType.CENTER,spacing:{after:60},children:[new TextRun({text:t,bold:true,size:21,color:'2c4a2e',font:'Malgun Gothic'})]}));return;}
+    if((t.startsWith('"')||t.startsWith('\u201c'))&&(t.endsWith('"')||t.endsWith('\u201d'))){children.push(new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:160,after:160},children:[new TextRun({text:t,bold:true,size:24,color:'2c4a2e',font:'Malgun Gothic',italics:true})]}));return;}
+    if(t.startsWith('·')){children.push(new Paragraph({spacing:{after:40},children:[new TextRun({text:t,size:20,font:'Malgun Gothic'})]}));return;}
+    if(t.includes('담당:')||t.startsWith('www.')){children.push(new Paragraph({alignment:AlignmentType.CENTER,spacing:{before:120},children:[new TextRun({text:t,size:18,color:'888888',font:'Malgun Gothic'})]}));return;}
+    children.push(new Paragraph({spacing:{after:80},children:[new TextRun({text:t,size:21,font:'Malgun Gothic'})]}));
   });
   return children;
 }
 
 async function downloadWord(){
-  const btn = document.getElementById('dl-word');
-  btn.disabled = true; btn.textContent = '생성 중...';
+  const btn=document.getElementById('dl-word');
+  btn.disabled=true; btn.textContent='생성 중...';
   try {
-    const { Document, Packer } = docx;
-    const title = (document.getElementById('pr-title')||{}).value || '보도자료';
-    const doc = new Document({ sections: [{ properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children: buildDocxChildren(outputData[4].press || '') }] });
-    const buffer = await Packer.toBuffer(doc);
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `보도자료_${title}.docx`; a.click();
-    btn.textContent = '완료!'; setTimeout(()=>{ btn.disabled=false; btn.textContent='Word 다운로드'; }, 2000);
-  } catch(e){ btn.disabled=false; btn.textContent='Word 다운로드'; alert('Word 생성 실패: '+e.message); }
+    const {Document,Packer}=docx;
+    const title=(document.getElementById('pr-title')||{}).value||'보도자료';
+    const doc=new Document({sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1440,right:1440,bottom:1440,left:1440}}},children:buildDocxChildren(outputData[4].press||'')}]});
+    const buffer=await Packer.toBuffer(doc);
+    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`보도자료_${title}.docx`; a.click();
+    btn.textContent='완료!'; setTimeout(()=>{btn.disabled=false;btn.textContent='Word 다운로드';},2000);
+  } catch(e){btn.disabled=false;btn.textContent='Word 다운로드';alert('Word 생성 실패: '+e.message);}
 }
 
 async function downloadPDF(){
-  const btn = document.getElementById('dl-pdf');
-  btn.disabled = true; btn.textContent = '생성 중...';
+  const btn=document.getElementById('dl-pdf');
+  btn.disabled=true; btn.textContent='생성 중...';
   try {
-    const { jsPDF } = window.jspdf;
-    const title = (document.getElementById('pr-title')||{}).value || '보도자료';
-    const pub = (document.getElementById('pr-pub')||{}).value || '';
-    const text = outputData[4].press || '';
-    const doc = new jsPDF({ orientation:'p', unit:'mm', format:'a4' });
-    const pageW = doc.internal.pageSize.getWidth(), pageH = doc.internal.pageSize.getHeight(), margin = 20, contentW = pageW - margin*2;
-    let y = margin;
-    doc.setFontSize(9); doc.setTextColor(150,150,150); doc.text(pub, pageW-margin, y, {align:'right'}); y+=10;
-    text.split('\n').forEach(line => {
-      if(y>pageH-margin-10){ doc.addPage(); y=margin; }
-      const t = line.trim();
-      if(!t){ y+=4; return; }
-      if(/^─{3,}$/.test(t)){ doc.setDrawColor(200,200,200); doc.line(margin,y,pageW-margin,y); y+=5; return; }
-      if(t.startsWith('■')){ y+=4; doc.setFontSize(12); doc.setTextColor(30,30,30); doc.setFont(undefined,'bold'); const w=doc.splitTextToSize(t,contentW); doc.text(w,margin,y); y+=w.length*6+3; doc.setFont(undefined,'normal'); return; }
-      if(t.startsWith('★')){ doc.setFontSize(10); doc.setTextColor(44,74,46); doc.setFont(undefined,'bold'); const w=doc.splitTextToSize(t,contentW); doc.text(w,pageW/2,y,{align:'center'}); y+=w.length*5.5+1; doc.setFont(undefined,'normal'); return; }
-      if((t.startsWith('"')||t.startsWith('\u201c'))&&(t.endsWith('"')||t.endsWith('\u201d'))){ y+=3; doc.setFontSize(11); doc.setTextColor(44,74,46); doc.setFont(undefined,'bold'); const w=doc.splitTextToSize(t,contentW-10); doc.text(w,pageW/2,y,{align:'center'}); y+=w.length*6+3; doc.setFont(undefined,'normal'); return; }
-      if(t.startsWith('·')){ doc.setFontSize(9.5); doc.setTextColor(60,60,60); const w=doc.splitTextToSize(t,contentW); doc.text(w,margin,y); y+=w.length*5+1; return; }
-      if(t.includes('담당:')||t.startsWith('www.')){ doc.setFontSize(9); doc.setTextColor(150,150,150); const w=doc.splitTextToSize(t,contentW); doc.text(w,pageW/2,y,{align:'center'}); y+=w.length*5+2; return; }
-      doc.setFontSize(10); doc.setTextColor(60,60,60); doc.setFont(undefined,'normal'); const w=doc.splitTextToSize(t,contentW); doc.text(w,margin,y); y+=w.length*5.5+1;
+    const {jsPDF}=window.jspdf;
+    const title=(document.getElementById('pr-title')||{}).value||'보도자료';
+    const pub=(document.getElementById('pr-pub')||{}).value||'';
+    const text=outputData[4].press||'';
+    const doc=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+    const pageW=doc.internal.pageSize.getWidth(),pageH=doc.internal.pageSize.getHeight(),margin=20,contentW=pageW-margin*2;
+    let y=margin;
+    doc.setFontSize(9);doc.setTextColor(150,150,150);doc.text(pub,pageW-margin,y,{align:'right'});y+=10;
+    text.split('\n').forEach(line=>{
+      if(y>pageH-margin-10){doc.addPage();y=margin;}
+      const t=line.trim();
+      if(!t){y+=4;return;}
+      if(/^─{3,}$/.test(t)){doc.setDrawColor(200,200,200);doc.line(margin,y,pageW-margin,y);y+=5;return;}
+      if(t.startsWith('■')){y+=4;doc.setFontSize(12);doc.setTextColor(30,30,30);doc.setFont(undefined,'bold');const w=doc.splitTextToSize(t,contentW);doc.text(w,margin,y);y+=w.length*6+3;doc.setFont(undefined,'normal');return;}
+      if(t.startsWith('★')){doc.setFontSize(10);doc.setTextColor(44,74,46);doc.setFont(undefined,'bold');const w=doc.splitTextToSize(t,contentW);doc.text(w,pageW/2,y,{align:'center'});y+=w.length*5.5+1;doc.setFont(undefined,'normal');return;}
+      if((t.startsWith('"')||t.startsWith('\u201c'))&&(t.endsWith('"')||t.endsWith('\u201d'))){y+=3;doc.setFontSize(11);doc.setTextColor(44,74,46);doc.setFont(undefined,'bold');const w=doc.splitTextToSize(t,contentW-10);doc.text(w,pageW/2,y,{align:'center'});y+=w.length*6+3;doc.setFont(undefined,'normal');return;}
+      if(t.startsWith('·')){doc.setFontSize(9.5);doc.setTextColor(60,60,60);const w=doc.splitTextToSize(t,contentW);doc.text(w,margin,y);y+=w.length*5+1;return;}
+      if(t.includes('담당:')||t.startsWith('www.')){doc.setFontSize(9);doc.setTextColor(150,150,150);const w=doc.splitTextToSize(t,contentW);doc.text(w,pageW/2,y,{align:'center'});y+=w.length*5+2;return;}
+      doc.setFontSize(10);doc.setTextColor(60,60,60);doc.setFont(undefined,'normal');const w=doc.splitTextToSize(t,contentW);doc.text(w,margin,y);y+=w.length*5.5+1;
     });
     doc.save(`보도자료_${title}.pdf`);
-    btn.textContent = '완료!'; setTimeout(()=>{ btn.disabled=false; btn.textContent='PDF 다운로드'; }, 2000);
-  } catch(e){ btn.disabled=false; btn.textContent='PDF 다운로드'; alert('PDF 생성 실패: '+e.message); }
+    btn.textContent='완료!'; setTimeout(()=>{btn.disabled=false;btn.textContent='PDF 다운로드';},2000);
+  } catch(e){btn.disabled=false;btn.textContent='PDF 다운로드';alert('PDF 생성 실패: '+e.message);}
 }
 </script>
 </body>
