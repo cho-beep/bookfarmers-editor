@@ -235,3 +235,146 @@ ${newsText}
 
 【SNS 카피】
 (인스타그램용, 2~3줄 + 해시태그 5개)`;
+
+      if (file) {
+        const fd = new FormData();
+        fd.append('prompt', prompt);
+        fd.append('file', file);
+        const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
+        const data = await res.json();
+        return data.result || data.error;
+      }
+      return await callAI(prompt);
+    }
+  },
+
+  manuscript: {
+    fields: [
+      { id: 'title', label: '원고 제목', type: 'input', placeholder: '임시 제목 또는 작업명' },
+      { id: 'genre', label: '분야', type: 'select', options: ['소설/에세이', '인문/교양', '자기계발', '경제경영'] },
+      { id: 'content', label: '원고 내용 (일부 붙여넣기)', type: 'textarea', placeholder: '원고 일부를 붙여넣어 주세요' },
+      { id: 'file', label: '파일 업로드 (PDF/DOCX/TXT)', type: 'file' },
+    ],
+    run: async (v, file) => {
+      const prompt = `출판 기획편집자로서 아래 원고를 검토해주세요.
+
+제목: ${v.title}
+분야: ${v.genre}
+
+【원고 총평】강점과 개선점 각 3가지
+【독자 타깃 분석】주요 독자층과 그 이유
+【시장성 평가】베스트셀러 가능성 (상/중/하) + 이유
+【편집 방향 제안】구성, 제목, 포지셔닝 관련 제안 3가지
+【유사 성공 사례】참고할 만한 기출간 도서 2~3권`;
+
+      if (file) {
+        const fd = new FormData();
+        fd.append('prompt', prompt);
+        fd.append('file', file);
+        const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
+        const data = await res.json();
+        return data.result || data.error;
+      }
+      if (v.content) {
+        return await callAI(prompt + '\n\n원고 내용:\n' + v.content);
+      }
+      return '원고 내용을 입력하거나 파일을 업로드해주세요.';
+    }
+  }
+};
+
+async function callAI(prompt) {
+  const fd = new FormData();
+  fd.append('prompt', prompt);
+  const res = await fetch(`${SERVER}/api/analyze`, { method: 'POST', body: fd });
+  const data = await res.json();
+  return data.result || data.error || '결과를 가져올 수 없습니다.';
+}
+
+function renderBooks(books) {
+  if (!books.length) return;
+  const right = document.getElementById('rightPanel');
+  const grid = document.createElement('div');
+  grid.innerHTML = `<div class="section-title">🔍 네이버 책 검색 결과 (${books.length}건)</div>`;
+  const bookGrid = document.createElement('div');
+  bookGrid.className = 'book-grid';
+  books.slice(0,12).forEach(b => {
+    const title = b.title.replace(/<[^>]+>/g,'');
+    const author = b.author.replace(/<[^>]+>/g,'');
+    bookGrid.innerHTML += `<div class="book-card">
+      <img src="${b.image||''}" alt="${title}" onerror="this.style.display='none'">
+      <div class="info"><div class="title">${title}</div><div class="author">${author}</div><div class="publisher">${b.publisher}</div></div>
+    </div>`;
+  });
+  grid.appendChild(bookGrid);
+  right.innerHTML = '';
+  right.appendChild(grid);
+}
+
+let currentTab = 'trend';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', Object.keys(TABS)[i] === tab);
+  });
+  renderForm(tab);
+  document.getElementById('rightPanel').innerHTML = '<div class="empty"><div class="glyph">📖</div><p>정보를 입력하고<br>분석을 시작해주세요.</p></div>';
+}
+
+function renderForm(tab) {
+  const form = TABS[tab];
+  const left = document.getElementById('leftPanel');
+  let html = '';
+  form.fields.forEach(f => {
+    if (f.type === 'input') {
+      html += `<div class="field"><label>${f.label}</label><input id="${f.id}" placeholder="${f.placeholder||''}"></div>`;
+    } else if (f.type === 'select') {
+      html += `<div class="field"><label>${f.label}</label><select id="${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+    } else if (f.type === 'textarea') {
+      html += `<div class="field"><label>${f.label}</label><textarea id="${f.id}" placeholder="${f.placeholder||''}"></textarea></div>`;
+    } else if (f.type === 'file') {
+      html += `<div class="field"><label>${f.label}</label><input type="file" id="${f.id}" accept=".pdf,.docx,.txt"></div>`;
+    }
+  });
+  html += `<div class="divider"></div><button class="btn" onclick="runAgent()">분석 시작</button>`;
+  left.innerHTML = html;
+}
+
+async function runAgent() {
+  const form = TABS[currentTab];
+  const vals = {};
+  let file = null;
+  form.fields.forEach(f => {
+    if (f.type === 'file') {
+      const el = document.getElementById(f.id);
+      if (el && el.files[0]) file = el.files[0];
+    } else {
+      const el = document.getElementById(f.id);
+      vals[f.id] = el ? el.value.trim() : '';
+    }
+  });
+
+  const btn = document.querySelector('.btn');
+  const right = document.getElementById('rightPanel');
+  btn.disabled = true;
+  right.innerHTML = '<div class="loading"><div class="dots"><span></span><span></span><span></span></div><span>AI가 분석 중입니다… (30초~1분 소요)</span></div>';
+
+  try {
+    const result = await form.run(vals, file);
+    const existing = right.querySelector('.section-title') ? right.innerHTML : '';
+    if (existing) {
+      right.innerHTML = existing + `<div class="section-title" style="margin-top:24px">🤖 AI 분석 결과</div><div class="result-box">${result}</div>`;
+    } else {
+      right.innerHTML = `<div class="result-box">${result}</div>`;
+    }
+  } catch(e) {
+    right.innerHTML = `<div class="result-box">오류: ${e.message}</div>`;
+  }
+  btn.disabled = false;
+}
+
+renderForm('trend');
+</script>
+</body>
+</html>
